@@ -28,3 +28,6 @@ __pycache__/
 *.iml
 .vscode/
 .DS_Store
+
+# ===== CI workflow (ربات اجازهٔ push ندارد؛ کاربر طبق docs/CI_SETUP.md اضافه می‌کند) =====
+.github/workflows/
