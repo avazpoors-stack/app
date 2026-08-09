@@ -83,3 +83,16 @@
 - ساخت APK در این محیط نیاز به نصب JDK + Android SDK دارد (حدود ۱GB+ دانلود) یا GitHub Actions با image استاندارد اندروید — (verified: toolchain check)
 - یادآور محلی: پکیج flutter_local_notifications [assumed] — نسخه در Build Phase 1 از pub.dev راستی‌آزمایی می‌شود
 - ذخیرهٔ محلی: پیش‌فرض sqflite + shared_preferences [assumed] — راستی‌آزمایی در Phase 1
+
+### محدودیت شبکهٔ محیط (مهم برای همهٔ جلسه‌ها)
+- storage.googleapis.com، pub.dev، raw.githubusercontent.com و میریورهای چین مسدود/غیرقابل‌دسترس‌اند (DNS فقط IPv6 و IPv6 کار نمی‌کند؛ حتی IPv4 بسته است)؛ pypi.org، api.github.com، github.com بازند — (verified: curl tests 2026-08-09)
+- نتیجه: بیلد/تست Flutter فقط از طریق GitHub Actions (CI)؛ بک‌اند پایتون محلی تست می‌شود
+- دانلود فایل از گیتهاب بدون raw.githubusercontent: `gh api repos/<o>/<r>/contents/<path>` با هدر `Accept: application/vnd.github.raw` — (verified: فونت وزیرمتن و gradle-wrapper.jar)
+
+## ۸) وضعیت اجرا (Build Log)
+| تاریخ | رویداد | وضعیت |
+|---|---|---|
+| 2026-08-09 | فاز P0 شروع شد: اسکلت Flutter (تم بام دارک/لایت، ۴ تب، RTL+فونت وزیرمتن، تست ویدجت) + بک‌اند FastAPI (/health + pytest) + CI (analyze/test/APK) | در حال اجرا |
+| 2026-08-09 | بک‌اند: pytest سبز (1 passed) — (verified: اجرای محلی) | ✅ |
+| 2026-08-09 | فونت Vazirmatn (Regular/Medium/Bold) و gradle-wrapper.jar و ۵ آیکون PNG ساخته/دریافت شد — (verified) | ✅ |
+| 2026-08-09 | CI در گیت‌هاب push شد — منتظر نتیجهٔ flutter analyze/test/build | ⏳ |

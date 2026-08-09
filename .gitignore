@@ -1,0 +1,30 @@
+# ===== امنیت: کلیدها و رمزها هرگز وارد گیت نشوند =====
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+keys/
+secrets/
+
+# ===== Dart / Flutter =====
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ===== Android =====
+android/local.properties
+.gradle/
+
+# ===== Python =====
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# ===== IDE / OS =====
+.idea/
+*.iml
+.vscode/
+.DS_Store
