@@ -96,3 +96,4 @@
 | 2026-08-09 | بک‌اند: pytest سبز (1 passed) — (verified: اجرای محلی) | ✅ |
 | 2026-08-09 | فونت Vazirmatn (Regular/Medium/Bold) و gradle-wrapper.jar و ۵ آیکون PNG ساخته/دریافت شد — (verified) | ✅ |
 | 2026-08-09 | CI در گیت‌هاب push شد — منتظر نتیجهٔ flutter analyze/test/build | ⏳ |
+| 2026-08-09 | **محدودیت توکن ربات:** push/API فایل‌های `.github/workflows/` ممنوع است (verified: HTTP 403). راه‌حل: راهنمای `docs/CI_SETUP.md` — کاربر یک‌بار فایل را در گیت‌هاب اضافه می‌کند | ⏳ نیاز به کاربر |
