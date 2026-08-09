@@ -7,6 +7,10 @@
 keys/
 secrets/
 
+# ===== پوشهٔ تنظیمات کاربر (config): فقط نمونه‌ها وارد گیت می‌شوند =====
+config/*.env
+!config/*.env.example
+
 # ===== Dart / Flutter =====
 .dart_tool/
 build/
