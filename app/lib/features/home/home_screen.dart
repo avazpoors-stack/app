@@ -6,6 +6,7 @@ import '../../core/services/jalali.dart';
 import '../../core/services/storage.dart';
 import '../../core/services/streak.dart';
 import '../../core/theme/app_colors.dart';
+import '../search/global_search_button.dart';
 import '../workout/energy_selector.dart';
 import '../workout/today_workout_screen.dart';
 
@@ -50,7 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('بدنه')),
+      appBar: AppBar(
+        title: const Text('بدنه'),
+        actions: const [GlobalSearchButton()],
+      ),
       body: FutureBuilder<UserProgress>(
         future: _future,
         builder: (context, snapshot) {

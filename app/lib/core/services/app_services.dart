@@ -6,6 +6,7 @@ import 'auth_service.dart';
 import 'content_repository.dart';
 import 'progress_repository.dart';
 import 'remote_api.dart';
+import 'search_service.dart';
 import 'storage.dart';
 import 'sync_service.dart';
 
@@ -18,6 +19,7 @@ class AppServices {
     required this.account,
     required this.auth,
     required this.sync,
+    required this.search,
   });
 
   final ContentRepository content;
@@ -26,6 +28,7 @@ class AppServices {
   final AccountRepository account;
   final AuthService auth;
   final SyncService sync;
+  final SearchService search;
 
   /// تم برنامه — از پروفایل/پایین‌ترین صفحه قابل تغییر (دارک/لایت/سیستم).
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
@@ -69,12 +72,13 @@ class AppServices {
   }) {
     final progress = ProgressRepository(store);
     final account = AccountRepository(store);
+    final content = ContentRepository(overrides: contentOverrides);
     final remote = api ??
         (baseUrl != null && baseUrl.isNotEmpty
             ? HttpRemoteApi(baseUrl: baseUrl)
             : const OfflineRemoteApi());
     final services = AppServices(
-      content: ContentRepository(overrides: contentOverrides),
+      content: content,
       progress: progress,
       account: account,
       auth: AuthService(repository: account, api: remote),
@@ -84,6 +88,7 @@ class AppServices {
         progress: progress,
         clock: Clock(fixed: now),
       ),
+      search: SearchService(content: content, store: store, api: remote),
       clock: Clock(fixed: now),
     );
     return services;

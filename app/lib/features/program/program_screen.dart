@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/models/models.dart';
 import '../../core/services/app_services.dart';
 import '../../core/theme/app_colors.dart';
+import '../search/global_search_button.dart';
 
 /// تب برنامه — انتخاب برنامهٔ فعال (امکان تغییر سطح، مسترپلن ۲.۲).
 class ProgramScreen extends StatefulWidget {
@@ -34,7 +35,10 @@ class _ProgramScreenState extends State<ProgramScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('برنامه')),
+      appBar: AppBar(
+        title: const Text('برنامه'),
+        actions: const [GlobalSearchButton()],
+      ),
       body: FutureBuilder<UserProgress>(
         future: _future,
         builder: (context, snapshot) {

@@ -8,7 +8,7 @@
 - محصول: اپ اندروید «بدنه (Badane)» — فیتنس آفلاین-اول (Offline-First) با گیمیفیکیشن، برای جذب حامی مالی — (user, 2026-08-09)
 - نسخه: Pilot 0.9 (Sponsor-Ready)؛ استک: **Flutter** — (verified: docs/BADANE_MASTERPLAN.md بخش ۸)
 - ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019fec12-app (جلسه‌های قبل: arena/019febc8-app، arena/019fe750-app)
-- وضعیت: کدنویسی فعال — P0/P1 کامل؛ P2 (بک‌اند+حساب‌ها+سینک) پیاده‌سازی شد؛ بک‌اند محلی سبز است و CI Flutter/GitHub در حال اصلاح/اجراست (2026-08-10)
+- وضعیت: کدنویسی فعال — P0/P1/P2 کامل از نظر کدنویسی؛ P3 جستجوی سراسری پیاده‌سازی اولیه شد؛ بک‌اند محلی سبز است و CI Flutter/GitHub نیازمند اصلاح workflow توسط کاربر/دسترسی GitHub است (2026-08-10)
 
 ## قواعد شواهد (برای همهٔ جلسات)
 هر ادعای واقعی باید یکی از این برچسب‌ها را داشته باشد:
@@ -108,3 +108,6 @@
 | 2026-08-10 | تست بک‌اند دوباره در محیط محلی اجرا شد: `.venv` ساخته شد، requirements نصب شد، `python -m pytest -q` در `server/` → **23 passed, 1 warning** | ✅ |
 | 2026-08-10 | علت fail تست‌های GitHub مشخص شد: workflow قبلی `Dart` در ریشهٔ ریپو `dart pub get` اجرا می‌کرد، در حالی که پروژهٔ Flutter داخل `app/` است؛ workflow به `Badane CI` برای backend pytest + Flutter analyze/test/APK **در فایل محلی** اصلاح شد و `docs/CI_SETUP.md` به‌روز شد | در انتظار اعمال workflow در GitHub |
 | 2026-08-10 | push تغییر workflow به GitHub رد شد: `refusing to allow a GitHub App to create or update workflow ... without workflows permission`؛ بنابراین docs/MEMORY push شد ولی خود `.github/workflows/dart.yml` باید یا با دسترسی workflow توسط کاربر اعمال شود یا طبق راهنمای `docs/CI_SETUP.md` دستی در GitHub جایگزین شود | نیاز به کاربر/دسترسی GitHub |
+| 2026-08-10 | شروع P3 بعد از بازبینی امنیت/ویژگی: query محدود و نرمال‌سازی فارسی، بدون SQL خام، rate-limit سرور، عدم ثبت query در audit، تاریخچه فقط محلی، فیلتر دسته و Mock برچسب‌دار برای فازهای بعد | ✅ |
+| 2026-08-10 | P3 Flutter: `SearchService` آفلاین-اول (حرکات/برنامه‌ها + Mock محصولات/مکان‌ها/مربی‌ها)، ادغام Local+Remote با حذف تکراری، تاریخچهٔ ۱۰تایی محلی؛ `SearchScreen` با فیلتر، empty/error state و دکمهٔ جستجو در ۴ تب؛ تست‌های `search_service_test.dart` و `search_widget_test.dart` نوشته شد | در انتظار CI Flutter |
+| 2026-08-10 | P3 Backend: endpoint عمومی `GET /api/v1/search` با pydantic Query، rate-limit IP، نرمال‌سازی فارسی و seed امن/Mock؛ تست‌های backend اضافه شد؛ اجرای محلی: **26 passed, 1 warning** | ✅ |

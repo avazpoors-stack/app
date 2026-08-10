@@ -397,8 +397,10 @@ class SyncState {
             .toList(),
         profile: SyncProfile.fromJson(
             (json['profile'] as Map<String, dynamic>?) ?? <String, dynamic>{}),
-        totalPoints: json['totalPoints'] as int? ?? 0,
-        serverTime: json['serverTime'] as String? ?? '',
+        totalPoints:
+            (json['totalPoints'] as int?) ?? (json['total_points'] as int?) ?? 0,
+        serverTime:
+            (json['serverTime'] as String?) ?? (json['server_time'] as String?) ?? '',
       );
 
   final List<SyncEntry> entries;
@@ -411,5 +413,72 @@ class SyncState {
         'profile': profile.toJson(),
         'totalPoints': totalPoints,
         'serverTime': serverTime,
+      };
+}
+
+// ================= P3: جستجوی سراسری =================
+
+enum SearchCategory { exercise, program, product, venue, coach }
+
+extension SearchCategoryX on SearchCategory {
+  String get labelFa => switch (this) {
+        SearchCategory.exercise => 'حرکت',
+        SearchCategory.program => 'برنامه',
+        SearchCategory.product => 'محصول',
+        SearchCategory.venue => 'مکان',
+        SearchCategory.coach => 'مربی',
+      };
+
+  String get sectionFa => switch (this) {
+        SearchCategory.exercise => 'حرکات تمرینی',
+        SearchCategory.program => 'برنامه‌ها',
+        SearchCategory.product => 'فروشگاه',
+        SearchCategory.venue => 'مکان‌های ورزشی',
+        SearchCategory.coach => 'مربی‌هاب',
+      };
+
+  static SearchCategory fromName(String? name) => switch (name) {
+        'program' => SearchCategory.program,
+        'product' => SearchCategory.product,
+        'venue' => SearchCategory.venue,
+        'coach' => SearchCategory.coach,
+        _ => SearchCategory.exercise,
+      };
+}
+
+class SearchResult {
+  const SearchResult({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.category,
+    this.source = 'local',
+    this.comingSoon = false,
+  });
+
+  factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
+        id: json['id'] as String,
+        title: (json['title'] as String?) ?? (json['titleFa'] as String?) ?? '',
+        subtitle: json['subtitle'] as String? ?? '',
+        category: SearchCategoryX.fromName(json['category'] as String?),
+        source: json['source'] as String? ?? 'remote',
+        comingSoon:
+            (json['comingSoon'] as bool?) ?? (json['coming_soon'] as bool?) ?? false,
+      );
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final SearchCategory category;
+  final String source; // local / remote / mock
+  final bool comingSoon; // محصول/مکان/مربی تا فازهای بعد فقط پیش‌نمایش‌اند
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'subtitle': subtitle,
+        'category': category.name,
+        'source': source,
+        'comingSoon': comingSoon,
       };
 }

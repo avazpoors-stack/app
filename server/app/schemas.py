@@ -1,5 +1,6 @@
 """اعتبارسنجی ورودی/خروجی (pydantic) — همهٔ ورودی‌ها قبل از دیتابیس اعتبارسنجی می‌شوند."""
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
@@ -127,3 +128,28 @@ class AuditOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ================= P3: جستجوی سراسری =================
+
+class SearchCategory(str, Enum):
+    exercise = "exercise"
+    program = "program"
+    product = "product"
+    venue = "venue"
+    coach = "coach"
+
+
+class SearchResultOut(BaseModel):
+    id: str = Field(max_length=80)
+    title: str = Field(max_length=120)
+    subtitle: str = Field(max_length=240)
+    category: SearchCategory
+    source: str = Field(default="server", max_length=24)
+    coming_soon: bool = False
+
+
+class SearchOut(BaseModel):
+    results: list[SearchResultOut]
+    total: int
+    server_time: datetime

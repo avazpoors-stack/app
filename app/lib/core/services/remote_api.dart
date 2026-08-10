@@ -50,6 +50,11 @@ abstract class RemoteApi {
     required String tone,
     required String activeProgramId,
   });
+  Future<List<SearchResult>> search({
+    required String query,
+    SearchCategory? category,
+    int limit = 20,
+  });
   Future<void> logout(String refreshToken);
 }
 
@@ -198,6 +203,23 @@ class HttpRemoteApi implements RemoteApi {
   }
 
   @override
+  Future<List<SearchResult>> search({
+    required String query,
+    SearchCategory? category,
+    int limit = 20,
+  }) async {
+    final queryString = Uri(queryParameters: <String, String>{
+      'q': query,
+      'limit': limit.clamp(1, 50).toString(),
+      if (category != null) 'category': category.name,
+    }).query;
+    final data = await _send('GET', '/search?$queryString', <String, dynamic>{});
+    return (data['results'] as List<dynamic>? ?? [])
+        .map((e) => SearchResult.fromJson(e as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  @override
   Future<void> logout(String refreshToken) async {
     await _send(
         'POST', '/auth/logout', <String, dynamic>{'refresh_token': refreshToken});
@@ -253,6 +275,14 @@ class OfflineRemoteApi implements RemoteApi {
     required String activeProgramId,
   }) async =>
       _offline();
+
+  @override
+  Future<List<SearchResult>> search({
+    required String query,
+    SearchCategory? category,
+    int limit = 20,
+  }) async =>
+      const [];
 
   @override
   Future<void> logout(String refreshToken) async {}

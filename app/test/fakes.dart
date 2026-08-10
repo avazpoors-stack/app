@@ -3,10 +3,12 @@ import 'package:badane/core/services/remote_api.dart';
 
 /// پیاده‌سازی جعلی API برای تست — بدون شبکه (قرارداد اینترفیس ۲.۵).
 class FakeRemoteApi implements RemoteApi {
-  FakeRemoteApi({this.offline = false});
+  FakeRemoteApi({this.offline = false, List<SearchResult>? searchResults})
+      : searchResults = searchResults ?? const [];
 
   bool offline;
   bool loggedOut = false;
+  final List<SearchResult> searchResults;
   final List<({List<SyncEntry> entries, SyncProfile? profile})> pushes = [];
   SyncState? lastClaim;
 
@@ -111,6 +113,19 @@ class FakeRemoteApi implements RemoteApi {
       serverTime: '2026-08-10T12:00:00Z',
     );
     return lastClaim!;
+  }
+
+  @override
+  Future<List<SearchResult>> search({
+    required String query,
+    SearchCategory? category,
+    int limit = 20,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return searchResults
+        .where((r) => category == null || r.category == category)
+        .take(limit)
+        .toList(growable: false);
   }
 
   @override
