@@ -106,4 +106,5 @@
 | 2026-08-10 | برنچ جلسهٔ قبلی: `arena/019febc8-app` | ✅ |
 | 2026-08-10 | برنچ کاری فعلی: `arena/019fec12-app`؛ وضعیت repo در شروع جلسه clean بود | ✅ |
 | 2026-08-10 | تست بک‌اند دوباره در محیط محلی اجرا شد: `.venv` ساخته شد، requirements نصب شد، `python -m pytest -q` در `server/` → **23 passed, 1 warning** | ✅ |
-| 2026-08-10 | علت fail تست‌های GitHub مشخص شد: workflow قبلی `Dart` در ریشهٔ ریپو `dart pub get` اجرا می‌کرد، در حالی که پروژهٔ Flutter داخل `app/` است؛ workflow به `Badane CI` برای backend pytest + Flutter analyze/test/APK اصلاح شد و `docs/CI_SETUP.md` به‌روز شد | در انتظار اجرای GitHub Actions |
+| 2026-08-10 | علت fail تست‌های GitHub مشخص شد: workflow قبلی `Dart` در ریشهٔ ریپو `dart pub get` اجرا می‌کرد، در حالی که پروژهٔ Flutter داخل `app/` است؛ workflow به `Badane CI` برای backend pytest + Flutter analyze/test/APK **در فایل محلی** اصلاح شد و `docs/CI_SETUP.md` به‌روز شد | در انتظار اعمال workflow در GitHub |
+| 2026-08-10 | push تغییر workflow به GitHub رد شد: `refusing to allow a GitHub App to create or update workflow ... without workflows permission`؛ بنابراین docs/MEMORY push شد ولی خود `.github/workflows/dart.yml` باید یا با دسترسی workflow توسط کاربر اعمال شود یا طبق راهنمای `docs/CI_SETUP.md` دستی در GitHub جایگزین شود | نیاز به کاربر/دسترسی GitHub |
