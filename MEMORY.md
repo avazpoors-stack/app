@@ -7,8 +7,8 @@
 ## پروژه در یک نگاه
 - محصول: اپ اندروید «بدنه (Badane)» — فیتنس آفلاین-اول (Offline-First) با گیمیفیکیشن، برای جذب حامی مالی — (user, 2026-08-09)
 - نسخه: Pilot 0.9 (Sponsor-Ready)؛ استک: **Flutter** — (verified: docs/BADANE_MASTERPLAN.md بخش ۸)
-- ریپو: github.com/avazpoors-stack/app — برنچ کاری این جلسه: arena/019febc8-app (جلسهٔ قبل: arena/019fe750-app)
-- وضعیت: کدنویسی فعال — P0/P1 کامل؛ P2 (بک‌اند+حساب‌ها+سینک) پیاده‌سازی شد، در انتظار CI (2026-08-10)
+- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019fec12-app (جلسه‌های قبل: arena/019febc8-app، arena/019fe750-app)
+- وضعیت: کدنویسی فعال — P0/P1 کامل؛ P2 (بک‌اند+حساب‌ها+سینک) پیاده‌سازی شد؛ بک‌اند محلی سبز است و CI Flutter/GitHub در حال اصلاح/اجراست (2026-08-10)
 
 ## قواعد شواهد (برای همهٔ جلسات)
 هر ادعای واقعی باید یکی از این برچسب‌ها را داشته باشد:
@@ -103,4 +103,7 @@
 | 2026-08-10 | P2: بک‌اند کامل — OTP Mock/رمز argon2، JWT کوتاه‌عمر+رفرش چرخشی، RBAC ۵ نقش، rate-limit، لاگ ممیزی، سینک push/pull/claim با «آخرین‌تغییر-برنده»، اسکریپت پشتیبان؛ **۲۳ تست pytest سبز محلی + تست زندهٔ curl** — (verified: اجرای محلی) | ✅ |
 | 2026-08-10 | P2 سمت Flutter: AccountRepository/AuthService/RemoteApi (قرارداد ۲.۵: Http/Offline)/SyncService (صف آفلاین+ادغام)+صفحهٔ پروفایل (ورود OTP با نمایش کد توسعه، تم دارک/لایت/سیستم، همگام‌سازی، خروج) + ۶ تست نوشته شد؛ اجرای تست‌های Flutter فقط در CI | ⏳ در انتظار CI |
 | 2026-08-10 | آدرس سرور اپ از `--dart-define=BADANE_API_URL=...` خوانده می‌شود؛ بدون آن اپ آفلاین/مهمان کامل کار می‌کند — (verified: کد remote_api.dart) | ✅ |
-| 2026-08-10 | برنچ این جلسه: `arena/019febc8-app` (برنچ کاری جدید نسبت به جلسهٔ قبل) | ✅ |
+| 2026-08-10 | برنچ جلسهٔ قبلی: `arena/019febc8-app` | ✅ |
+| 2026-08-10 | برنچ کاری فعلی: `arena/019fec12-app`؛ وضعیت repo در شروع جلسه clean بود | ✅ |
+| 2026-08-10 | تست بک‌اند دوباره در محیط محلی اجرا شد: `.venv` ساخته شد، requirements نصب شد، `python -m pytest -q` در `server/` → **23 passed, 1 warning** | ✅ |
+| 2026-08-10 | علت fail تست‌های GitHub مشخص شد: workflow قبلی `Dart` در ریشهٔ ریپو `dart pub get` اجرا می‌کرد، در حالی که پروژهٔ Flutter داخل `app/` است؛ workflow به `Badane CI` برای backend pytest + Flutter analyze/test/APK اصلاح شد و `docs/CI_SETUP.md` به‌روز شد | در انتظار اجرای GitHub Actions |
