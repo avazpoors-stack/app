@@ -55,6 +55,15 @@ abstract class RemoteApi {
     SearchCategory? category,
     int limit = 20,
   });
+  Future<List<Venue>> listVenues({
+    VenueCategory? category,
+    String? query,
+    int limit = 50,
+  });
+  Future<Venue> createVenue({
+    required String accessToken,
+    required VenueDraft draft,
+  });
   Future<void> logout(String refreshToken);
 }
 
@@ -76,6 +85,18 @@ class HttpRemoteApi implements RemoteApi {
     Map<String, dynamic> body, {
     String? token,
   }) async {
+    final data = await _sendRaw(method, path, body, token: token);
+    if (data is Map<String, dynamic>) return data;
+    if (data is List<dynamic>) return {'items': data};
+    return <String, dynamic>{};
+  }
+
+  Future<dynamic> _sendRaw(
+    String method,
+    String path,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
     final client = HttpClient()..connectionTimeout = _timeout;
     try {
       final uri = Uri.parse('$baseUrl$path');
@@ -91,13 +112,14 @@ class HttpRemoteApi implements RemoteApi {
       }
       final response = await request.close().timeout(_timeout);
       final text = await response.transform(utf8.decoder).join();
-      final data = text.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(text) as Map<String, dynamic>;
+      final data = text.isEmpty ? <String, dynamic>{} : jsonDecode(text);
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        final detail = data is Map<String, dynamic>
+            ? data['detail'] as String?
+            : null;
         throw ApiException(
           response.statusCode,
-          (data['detail'] as String?) ?? 'خطا در ارتباط با سرور',
+          detail ?? 'خطا در ارتباط با سرور',
         );
       }
       return data;
@@ -220,6 +242,39 @@ class HttpRemoteApi implements RemoteApi {
   }
 
   @override
+  Future<List<Venue>> listVenues({
+    VenueCategory? category,
+    String? query,
+    int limit = 50,
+  }) async {
+    final queryString = Uri(queryParameters: <String, String>{
+      'limit': limit.clamp(1, 100).toString(),
+      if (category != null) 'category': category.apiName,
+      if (query != null && query.trim().length >= 2) 'q': query.trim(),
+    }).query;
+    final data = await _send('GET', '/venues?$queryString', <String, dynamic>{});
+    return _listFromJson(data).map(Venue.fromJson).toList(growable: false);
+  }
+
+  @override
+  Future<Venue> createVenue({
+    required String accessToken,
+    required VenueDraft draft,
+  }) async {
+    final data = await _send('POST', '/venues', draft.toJson(), token: accessToken);
+    return Venue.fromJson(data);
+  }
+
+  List<Map<String, dynamic>> _listFromJson(Map<String, dynamic> data) {
+    // این متد فقط برای سازگاری با endpointهایی است که ممکن است لیست خام یا wrapper بدهند.
+    final raw = data['results'] as List<dynamic>? ?? data['items'] as List<dynamic>?;
+    if (raw == null) return const [];
+    return raw
+        .map((e) => Map<String, dynamic>.from(e as Map<dynamic, dynamic>))
+        .toList(growable: false);
+  }
+
+  @override
   Future<void> logout(String refreshToken) async {
     await _send(
         'POST', '/auth/logout', <String, dynamic>{'refresh_token': refreshToken});
@@ -283,6 +338,21 @@ class OfflineRemoteApi implements RemoteApi {
     int limit = 20,
   }) async =>
       const [];
+
+  @override
+  Future<List<Venue>> listVenues({
+    VenueCategory? category,
+    String? query,
+    int limit = 50,
+  }) async =>
+      const [];
+
+  @override
+  Future<Venue> createVenue({
+    required String accessToken,
+    required VenueDraft draft,
+  }) async =>
+      _offline();
 
   @override
   Future<void> logout(String refreshToken) async {}

@@ -6,6 +6,7 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     Enum as SAEnum,
+    Float,
     ForeignKey,
     Integer,
     String,
@@ -104,3 +105,51 @@ class ServerWorkout(Base):
     points: Mapped[int] = mapped_column(Integer)
     client_uid: Mapped[str] = mapped_column(String(64), default="")
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+# ================= P4: مکان‌های ورزشی =================
+
+class VenueCategory(str, enum.Enum):
+    pool = "pool"  # استخر
+    gym = "gym"  # باشگاه بدنسازی
+    martial_arts = "martial_arts"  # رزمی
+    yoga = "yoga"  # یوگا/پیلاتس
+    crossfit = "crossfit"  # کراس‌فیت/ایروبیک
+    ball_sports = "ball_sports"  # ورزش‌های توپی
+    tennis = "tennis"  # تنیس/راکت
+    running = "running"  # دو/پارک
+    corrective = "corrective"  # حرکت اصلاحی/فیزیوتراپی
+
+
+class VenueStatus(str, enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
+
+class Venue(Base):
+    """مکان ورزشی ثبت‌شده توسط نقش باشگاه/مکان؛ انتشار فقط پس از تأیید ادمین."""
+
+    __tablename__ = "venues"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    name: Mapped[str] = mapped_column(String(80), index=True)
+    category: Mapped[VenueCategory] = mapped_column(
+        SAEnum(VenueCategory, native_enum=False, length=24), index=True
+    )
+    city: Mapped[str] = mapped_column(String(64), default="")
+    address: Mapped[str] = mapped_column(String(240))
+    phone: Mapped[str] = mapped_column(String(24), default="")
+    description: Mapped[str] = mapped_column(String(500), default="")
+    lat: Mapped[float | None] = mapped_column(Float, nullable=True)
+    lng: Mapped[float | None] = mapped_column(Float, nullable=True)
+    tariffs_json: Mapped[str] = mapped_column(Text, default="[]")
+    hours_json: Mapped[str] = mapped_column(Text, default="{}")
+    status: Mapped[VenueStatus] = mapped_column(
+        SAEnum(VenueStatus, native_enum=False, length=16), default=VenueStatus.pending, index=True
+    )
+    rejection_reason: Mapped[str] = mapped_column(String(240), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

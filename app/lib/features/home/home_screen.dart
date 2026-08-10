@@ -7,6 +7,7 @@ import '../../core/services/storage.dart';
 import '../../core/services/streak.dart';
 import '../../core/theme/app_colors.dart';
 import '../search/global_search_button.dart';
+import '../venues/venues_screen.dart';
 import '../workout/energy_selector.dart';
 import '../workout/today_workout_screen.dart';
 
@@ -112,6 +113,8 @@ class _HomeContent extends StatelessWidget {
           )
         else
           _DoneTodayCard(progress: progress),
+        const SizedBox(height: 16),
+        const _ExploreVenuesCard(),
       ],
     );
   }
@@ -310,6 +313,48 @@ class _ErrorState extends StatelessWidget {
           const SizedBox(height: 8),
           OutlinedButton(onPressed: onRetry, child: const Text('تلاش دوباره')),
         ],
+      ),
+    );
+  }
+}
+
+class _ExploreVenuesCard extends StatelessWidget {
+  const _ExploreVenuesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const CircleAvatar(
+              backgroundColor: AppColors.orange,
+              child: Icon(Icons.location_on_outlined, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('مکان‌های ورزشی نزدیک تو', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text(
+                    'استخر، باشگاه، رزمی، یوگا و حرکت اصلاحی — با نقشه نشان در حالت Mock.',
+                    style: TextStyle(fontSize: 12, color: AppColors.textMutedLight),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const VenuesScreen()),
+              ),
+              child: const Text('دیدن'),
+            ),
+          ],
+        ),
       ),
     );
   }

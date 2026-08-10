@@ -76,7 +76,7 @@ _DOCUMENTS = [
     _SearchDocument(
         id="venue_pool_sample",
         title="استخر نمونه بدنه",
-        subtitle="مکان نمونه · دسته استخر · نقشه نشان در فاز P4",
+        subtitle="مکان نمونه · دسته استخر · نقشه نشان placeholder",
         category=SearchCategory.venue,
         keywords="استخر شنا مکان ورزشی نشان باشگاه",
         coming_soon=True,
@@ -84,7 +84,7 @@ _DOCUMENTS = [
     _SearchDocument(
         id="venue_gym_sample",
         title="باشگاه بدنسازی نمونه",
-        subtitle="مکان نمونه · دسته بدنسازی · فاز P4",
+        subtitle="مکان نمونه · دسته بدنسازی · نیازمند تأیید ادمین",
         category=SearchCategory.venue,
         keywords="باشگاه بدنسازی مکان ورزشی وزنه تمرین",
         coming_soon=True,

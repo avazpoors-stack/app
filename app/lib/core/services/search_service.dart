@@ -249,7 +249,7 @@ const _futureModuleDocuments = <_SearchDocument>[
     SearchResult(
       id: 'venue_pool_sample',
       title: 'استخر نمونه بدنه',
-      subtitle: 'مکان نمونه · دسته استخر · نقشه نشان در فاز P4',
+      subtitle: 'مکان نمونه · دسته استخر · نقشه نشان placeholder',
       category: SearchCategory.venue,
       source: 'mock',
       comingSoon: true,
@@ -260,7 +260,7 @@ const _futureModuleDocuments = <_SearchDocument>[
     SearchResult(
       id: 'venue_gym_sample',
       title: 'باشگاه بدنسازی نمونه',
-      subtitle: 'مکان نمونه · دسته بدنسازی · فاز P4',
+      subtitle: 'مکان نمونه · دسته بدنسازی · نیازمند تأیید ادمین',
       category: SearchCategory.venue,
       source: 'mock',
       comingSoon: true,
