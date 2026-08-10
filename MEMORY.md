@@ -98,4 +98,5 @@
 | 2026-08-09 | فونت Vazirmatn (Regular/Medium/Bold) و gradle-wrapper.jar و ۵ آیکون PNG ساخته/دریافت شد — (verified) | ✅ |
 | 2026-08-09 | CI در گیت‌هاب push شد — منتظر نتیجهٔ flutter analyze/test/build | ⏳ |
 | 2026-08-09 | پوشهٔ `config/` ساخته شد: backend.env.example + app.env.example + deploy.env.example + README — (user) | ✅ |
+| 2026-08-09 | فاز P1: هستهٔ تمرین کامل نوشته شد — چرخهٔ طلایی (انرژی ← تمرین ← ثبت ست ← امتیاز/استریک ← کارت)، ۴ برنامهٔ JSON (آغاز/خانه‌ساز/رشد/شروع کوتاه)، ۲۸ حرکت، ۳ لحن، رنک‌ها، تقویم جلالی (پورت jalaali-js + بردارهای jdatetime)، ذخیرهٔ محلی (MethodChannel + FileStore بدون وابستگی خارجی) — (verified: کد + JSONها در ریپو) | در انتظار CI |
 | 2026-08-09 | **محدودیت توکن ربات:** push/API فایل‌های `.github/workflows/` ممنوع است (verified: HTTP 403). راه‌حل: راهنمای `docs/CI_SETUP.md` — کاربر یک‌بار فایل را در گیت‌هاب اضافه می‌کند | ⏳ نیاز به کاربر |

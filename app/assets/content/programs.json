@@ -1,0 +1,153 @@
+[
+  {
+    "id": "starter",
+    "name": "آغاز",
+    "level": "beginner",
+    "location": "خانه",
+    "daysPerWeek": 3,
+    "focus": "ساخت عادت و اصلاح فرم؛ بدون تجهیزات",
+    "sessions": [
+      {
+        "id": "A",
+        "name": "جلسهٔ A",
+        "exercises": [
+          {"exerciseId": "squat", "sets": 3, "reps": 10, "restSec": 60},
+          {"exerciseId": "pushup", "sets": 3, "reps": 8, "restSec": 60},
+          {"exerciseId": "glute_bridge", "sets": 3, "reps": 12, "restSec": 45},
+          {"exerciseId": "plank", "sets": 3, "reps": 20, "restSec": 45}
+        ]
+      },
+      {
+        "id": "B",
+        "name": "جلسهٔ B",
+        "exercises": [
+          {"exerciseId": "lunge", "sets": 3, "reps": 10, "restSec": 60},
+          {"exerciseId": "chair_dips", "sets": 3, "reps": 8, "restSec": 60},
+          {"exerciseId": "superman", "sets": 3, "reps": 12, "restSec": 45},
+          {"exerciseId": "wall_sit", "sets": 3, "reps": 30, "restSec": 45}
+        ]
+      },
+      {
+        "id": "C",
+        "name": "جلسهٔ C",
+        "exercises": [
+          {"exerciseId": "bird_dog", "sets": 3, "reps": 10, "restSec": 45},
+          {"exerciseId": "mountain_climber", "sets": 3, "reps": 12, "restSec": 60},
+          {"exerciseId": "calf_raise", "sets": 3, "reps": 15, "restSec": 45},
+          {"exerciseId": "cat_camel", "sets": 3, "reps": 10, "restSec": 30}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "home_builder",
+    "name": "خانه‌ساز",
+    "level": "intermediate",
+    "location": "خانه",
+    "daysPerWeek": 3,
+    "focus": "تنوع حرکتی و هایپرتروفی خانگی با دمبل/کش",
+    "sessions": [
+      {
+        "id": "A",
+        "name": "جلسهٔ A",
+        "exercises": [
+          {"exerciseId": "db_goblet_squat", "sets": 4, "reps": 10, "restSec": 75},
+          {"exerciseId": "db_bench_press", "sets": 4, "reps": 10, "restSec": 75},
+          {"exerciseId": "db_row", "sets": 4, "reps": 10, "restSec": 75},
+          {"exerciseId": "plank", "sets": 3, "reps": 30, "restSec": 45}
+        ]
+      },
+      {
+        "id": "B",
+        "name": "جلسهٔ B",
+        "exercises": [
+          {"exerciseId": "db_deadlift", "sets": 4, "reps": 10, "restSec": 75},
+          {"exerciseId": "db_shoulder_press", "sets": 4, "reps": 10, "restSec": 75},
+          {"exerciseId": "band_pull_apart", "sets": 3, "reps": 15, "restSec": 45},
+          {"exerciseId": "db_curl", "sets": 3, "reps": 12, "restSec": 60}
+        ]
+      },
+      {
+        "id": "C",
+        "name": "جلسهٔ C",
+        "exercises": [
+          {"exerciseId": "lunge", "sets": 3, "reps": 12, "restSec": 60},
+          {"exerciseId": "band_lateral_raise", "sets": 3, "reps": 15, "restSec": 45},
+          {"exerciseId": "chair_dips", "sets": 3, "reps": 12, "restSec": 60},
+          {"exerciseId": "bird_dog", "sets": 3, "reps": 12, "restSec": 45}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "growth",
+    "name": "رشد",
+    "level": "intermediate",
+    "location": "باشگاه",
+    "daysPerWeek": 4,
+    "focus": "تفکیک بالاتنه/پایین‌تنه و ثبت وزنه",
+    "sessions": [
+      {
+        "id": "A",
+        "name": "پایین‌تنه ۱",
+        "exercises": [
+          {"exerciseId": "leg_press", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "db_deadlift", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "lunge", "sets": 3, "reps": 12, "restSec": 60},
+          {"exerciseId": "calf_raise", "sets": 3, "reps": 15, "restSec": 45}
+        ]
+      },
+      {
+        "id": "B",
+        "name": "بالاتنه ۱",
+        "exercises": [
+          {"exerciseId": "chest_press_machine", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "seated_row", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "db_shoulder_press", "sets": 3, "reps": 10, "restSec": 75},
+          {"exerciseId": "db_curl", "sets": 3, "reps": 12, "restSec": 60}
+        ]
+      },
+      {
+        "id": "C",
+        "name": "پایین‌تنه ۲",
+        "exercises": [
+          {"exerciseId": "squat", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "glute_bridge", "sets": 3, "reps": 15, "restSec": 60},
+          {"exerciseId": "db_goblet_squat", "sets": 3, "reps": 12, "restSec": 60},
+          {"exerciseId": "wall_sit", "sets": 3, "reps": 30, "restSec": 45}
+        ]
+      },
+      {
+        "id": "D",
+        "name": "بالاتنه ۲",
+        "exercises": [
+          {"exerciseId": "db_bench_press", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "db_row", "sets": 4, "reps": 10, "restSec": 90},
+          {"exerciseId": "band_pull_apart", "sets": 3, "reps": 15, "restSec": 45},
+          {"exerciseId": "chair_dips", "sets": 3, "reps": 12, "restSec": 60}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quick_start",
+    "name": "شروع کوتاه",
+    "level": "all",
+    "location": "هرجا",
+    "daysPerWeek": 7,
+    "focus": "حفظ استریک در روزهای بی‌انرژی — ۱۰ دقیقه",
+    "sessions": [
+      {
+        "id": "QS",
+        "name": "۱۰ دقیقه",
+        "exercises": [
+          {"exerciseId": "squat", "sets": 2, "reps": 10, "restSec": 30},
+          {"exerciseId": "pushup", "sets": 2, "reps": 8, "restSec": 30},
+          {"exerciseId": "glute_bridge", "sets": 2, "reps": 10, "restSec": 30},
+          {"exerciseId": "plank", "sets": 2, "reps": 20, "restSec": 30},
+          {"exerciseId": "cat_camel", "sets": 2, "reps": 8, "restSec": 30}
+        ]
+      }
+    ]
+  }
+]
