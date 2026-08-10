@@ -1,0 +1,6 @@
+[
+  {"name": "نوپا", "emoji": "⚪", "minPoints": 0},
+  {"name": "جنگجو", "emoji": "🟠", "minPoints": 500},
+  {"name": "گلادیاتور", "emoji": "⚔️", "minPoints": 2000},
+  {"name": "اسطوره", "emoji": "🏆", "minPoints": 5000}
+]

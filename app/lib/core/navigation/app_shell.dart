@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+
+import '../../features/home/home_screen.dart';
+import '../../features/profile/profile_screen.dart';
+import '../../features/program/program_screen.dart';
+import '../../features/progress/progress_screen.dart';
+
+/// پوستهٔ اصلی اپ: ۴ تب (خانه / برنامه / پیشرفت / پروفایل)
+/// — ساختار ناوبری مسترپلن بخش ۲.۲
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _screens = [
+    HomeScreen(),
+    ProgramScreen(),
+    ProgressScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(index: _selectedIndex, children: _screens),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'خانه',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_month_outlined),
+            selectedIcon: Icon(Icons.calendar_month),
+            label: 'برنامه',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.insights_outlined),
+            selectedIcon: Icon(Icons.insights),
+            label: 'پیشرفت',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'پروفایل',
+          ),
+        ],
+      ),
+    );
+  }
+}

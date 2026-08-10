@@ -1,0 +1,37 @@
+# ===== امنیت: کلیدها و رمزها هرگز وارد گیت نشوند =====
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+keys/
+secrets/
+
+# ===== پوشهٔ تنظیمات کاربر (config): فقط نمونه‌ها وارد گیت می‌شوند =====
+config/*.env
+!config/*.env.example
+
+# ===== Dart / Flutter =====
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ===== Android =====
+android/local.properties
+.gradle/
+
+# ===== Python =====
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# ===== IDE / OS =====
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# ===== CI workflow (ربات اجازهٔ push ندارد؛ کاربر طبق docs/CI_SETUP.md اضافه می‌کند) =====
+.github/workflows/
