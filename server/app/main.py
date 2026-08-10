@@ -10,9 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Settings
 from .db import init_db
-from . import auth, sync
+from . import auth, sync, search, venues
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.4.0"
 
 settings = Settings()
 
@@ -50,3 +50,6 @@ def health() -> dict:
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(auth.admin_router, prefix="/api/v1")
 app.include_router(sync.router, prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
+app.include_router(venues.router, prefix="/api/v1")
+app.include_router(venues.admin_router, prefix="/api/v1")

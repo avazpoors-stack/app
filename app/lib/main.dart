@@ -8,8 +8,10 @@ import 'core/services/auth_service.dart';
 import 'core/services/content_repository.dart';
 import 'core/services/progress_repository.dart';
 import 'core/services/remote_api.dart';
+import 'core/services/search_service.dart';
 import 'core/services/storage.dart';
 import 'core/services/sync_service.dart';
+import 'core/services/venue_service.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -58,8 +60,9 @@ class BadaneApp extends StatelessWidget {
     final progress = ProgressRepository(store);
     final account = AccountRepository(store);
     const api = OfflineRemoteApi();
+    final content = ContentRepository();
     return AppServices(
-      content: ContentRepository(),
+      content: content,
       progress: progress,
       account: account,
       auth: AuthService(repository: account, api: api),
@@ -69,6 +72,8 @@ class BadaneApp extends StatelessWidget {
         progress: progress,
         clock: Clock(),
       ),
+      search: SearchService(content: content, store: store, api: api),
+      venues: VenueService(store: store, api: api, account: account),
       clock: Clock(),
     );
   }

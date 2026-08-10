@@ -3,10 +3,18 @@ import 'package:badane/core/services/remote_api.dart';
 
 /// پیاده‌سازی جعلی API برای تست — بدون شبکه (قرارداد اینترفیس ۲.۵).
 class FakeRemoteApi implements RemoteApi {
-  FakeRemoteApi({this.offline = false});
+  FakeRemoteApi({
+    this.offline = false,
+    List<SearchResult>? searchResults,
+    List<Venue>? venues,
+  })  : searchResults = searchResults ?? const [],
+        venues = venues ?? const [];
 
   bool offline;
   bool loggedOut = false;
+  final List<SearchResult> searchResults;
+  final List<Venue> venues;
+  final List<VenueDraft> createdVenues = [];
   final List<({List<SyncEntry> entries, SyncProfile? profile})> pushes = [];
   SyncState? lastClaim;
 
@@ -111,6 +119,42 @@ class FakeRemoteApi implements RemoteApi {
       serverTime: '2026-08-10T12:00:00Z',
     );
     return lastClaim!;
+  }
+
+  @override
+  Future<List<SearchResult>> search({
+    required String query,
+    SearchCategory? category,
+    int limit = 20,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return searchResults
+        .where((r) => category == null || r.category == category)
+        .take(limit)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<List<Venue>> listVenues({
+    VenueCategory? category,
+    String? query,
+    int limit = 50,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return venues
+        .where((v) => category == null || v.category == category)
+        .take(limit)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<Venue> createVenue({
+    required String accessToken,
+    required VenueDraft draft,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    createdVenues.add(draft);
+    return Venue.fromDraft(draft, id: 'remote-${createdVenues.length}');
   }
 
   @override

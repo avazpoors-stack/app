@@ -7,8 +7,8 @@
 ## پروژه در یک نگاه
 - محصول: اپ اندروید «بدنه (Badane)» — فیتنس آفلاین-اول (Offline-First) با گیمیفیکیشن، برای جذب حامی مالی — (user, 2026-08-09)
 - نسخه: Pilot 0.9 (Sponsor-Ready)؛ استک: **Flutter** — (verified: docs/BADANE_MASTERPLAN.md بخش ۸)
-- ریپو: github.com/avazpoors-stack/app — برنچ کاری این جلسه: arena/019febc8-app (جلسهٔ قبل: arena/019fe750-app)
-- وضعیت: کدنویسی فعال — P0/P1 کامل؛ P2 (بک‌اند+حساب‌ها+سینک) پیاده‌سازی شد، در انتظار CI (2026-08-10)
+- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019fec12-app (جلسه‌های قبل: arena/019febc8-app، arena/019fe750-app)
+- وضعیت: کدنویسی فعال — P0/P1/P2 کامل از نظر کدنویسی؛ P3 جستجوی سراسری و P4 مکان‌های ورزشی/نشان پیاده‌سازی اولیه شدند؛ بک‌اند محلی سبز است و CI Flutter/GitHub نیازمند اصلاح workflow توسط کاربر/دسترسی GitHub است (2026-08-10)
 
 ## قواعد شواهد (برای همهٔ جلسات)
 هر ادعای واقعی باید یکی از این برچسب‌ها را داشته باشد:
@@ -103,4 +103,14 @@
 | 2026-08-10 | P2: بک‌اند کامل — OTP Mock/رمز argon2، JWT کوتاه‌عمر+رفرش چرخشی، RBAC ۵ نقش، rate-limit، لاگ ممیزی، سینک push/pull/claim با «آخرین‌تغییر-برنده»، اسکریپت پشتیبان؛ **۲۳ تست pytest سبز محلی + تست زندهٔ curl** — (verified: اجرای محلی) | ✅ |
 | 2026-08-10 | P2 سمت Flutter: AccountRepository/AuthService/RemoteApi (قرارداد ۲.۵: Http/Offline)/SyncService (صف آفلاین+ادغام)+صفحهٔ پروفایل (ورود OTP با نمایش کد توسعه، تم دارک/لایت/سیستم، همگام‌سازی، خروج) + ۶ تست نوشته شد؛ اجرای تست‌های Flutter فقط در CI | ⏳ در انتظار CI |
 | 2026-08-10 | آدرس سرور اپ از `--dart-define=BADANE_API_URL=...` خوانده می‌شود؛ بدون آن اپ آفلاین/مهمان کامل کار می‌کند — (verified: کد remote_api.dart) | ✅ |
-| 2026-08-10 | برنچ این جلسه: `arena/019febc8-app` (برنچ کاری جدید نسبت به جلسهٔ قبل) | ✅ |
+| 2026-08-10 | برنچ جلسهٔ قبلی: `arena/019febc8-app` | ✅ |
+| 2026-08-10 | برنچ کاری فعلی: `arena/019fec12-app`؛ وضعیت repo در شروع جلسه clean بود | ✅ |
+| 2026-08-10 | تست بک‌اند دوباره در محیط محلی اجرا شد: `.venv` ساخته شد، requirements نصب شد، `python -m pytest -q` در `server/` → **23 passed, 1 warning** | ✅ |
+| 2026-08-10 | علت fail تست‌های GitHub مشخص شد: workflow قبلی `Dart` در ریشهٔ ریپو `dart pub get` اجرا می‌کرد، در حالی که پروژهٔ Flutter داخل `app/` است؛ workflow به `Badane CI` برای backend pytest + Flutter analyze/test/APK **در فایل محلی** اصلاح شد و `docs/CI_SETUP.md` به‌روز شد | در انتظار اعمال workflow در GitHub |
+| 2026-08-10 | push تغییر workflow به GitHub رد شد: `refusing to allow a GitHub App to create or update workflow ... without workflows permission`؛ بنابراین docs/MEMORY push شد ولی خود `.github/workflows/dart.yml` باید یا با دسترسی workflow توسط کاربر اعمال شود یا طبق راهنمای `docs/CI_SETUP.md` دستی در GitHub جایگزین شود | نیاز به کاربر/دسترسی GitHub |
+| 2026-08-10 | شروع P3 بعد از بازبینی امنیت/ویژگی: query محدود و نرمال‌سازی فارسی، بدون SQL خام، rate-limit سرور، عدم ثبت query در audit، تاریخچه فقط محلی، فیلتر دسته و Mock برچسب‌دار برای فازهای بعد | ✅ |
+| 2026-08-10 | P3 Flutter: `SearchService` آفلاین-اول (حرکات/برنامه‌ها + Mock محصولات/مکان‌ها/مربی‌ها)، ادغام Local+Remote با حذف تکراری، تاریخچهٔ ۱۰تایی محلی؛ `SearchScreen` با فیلتر، empty/error state و دکمهٔ جستجو در ۴ تب؛ تست‌های `search_service_test.dart` و `search_widget_test.dart` نوشته شد | در انتظار CI Flutter |
+| 2026-08-10 | P3 Backend: endpoint عمومی `GET /api/v1/search` با pydantic Query، rate-limit IP، نرمال‌سازی فارسی و seed امن/Mock؛ تست‌های backend اضافه شد؛ اجرای محلی: **26 passed, 1 warning** | ✅ |
+| 2026-08-10 | شروع P4 بعد از بازبینی امنیت/ویژگی: کلید نشان فقط env/`--dart-define`، ثبت مکان فقط نقش venue/admin، pending تا تأیید ادمین، pydantic/rate-limit، audit بدون PII، map placeholder بدون کلید، تعرفه و فیلتر دسته | ✅ |
+| 2026-08-10 | P4 Backend: مدل/endpoint مکان‌ها (`/api/v1/venues`, categories/mine/create/update + admin pending/approve/reject)، ۹ دسته جدا، status pending/approved/rejected، تعرفه JSON؛ اجرای محلی: **30 passed, 1 warning** | ✅ |
+| 2026-08-10 | P4 Flutter: `VenueService` آفلاین-اول با Mock و ثبت محلی pending، `VenuesScreen` با نقشه نشان placeholder، فیلتر ۹ دسته، جستجوی مکان، ثبت مکان و تعرفه؛ دکمه مکان‌ها در خانه؛ تست‌های `venue_service_test.dart` و `venues_widget_test.dart` نوشته شد | در انتظار CI Flutter |

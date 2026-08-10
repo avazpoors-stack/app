@@ -1,74 +1,117 @@
 # راه‌اندازی CI (تست خودکار + ساخت APK) — راهنمای یک‌باره
 
-> چرا لازم است؟ ربات کدنویسی اجازهٔ ذخیرهٔ فایل‌های workflow در گیت‌هاب را ندارد (verified: HTTP 403 — «Resource not accessible by integration»). این فایل باید **یک‌بار توسط خودت** در گیت‌هاب ساخته شود؛ بعد از آن، همه‌چیز خودکار است و در هر push، CI تست‌ها را اجرا و APK می‌سازد.
+## الان مشکل تست‌ها چه بود؟
 
-## روش: اضافه کردن فایل در گیت‌هاب (۳ دقیقه، بدون نیاز به تخصص)
+Workflow قبلی گیت‌هاب از قالب خام Dart آمده بود و در ریشهٔ ریپو دستور `dart pub get` می‌زد؛ در حالی که پروژهٔ Flutter داخل پوشهٔ `app/` است و بک‌اند داخل `server/`. به همین دلیل تست‌های GitHub Actions قبل از رسیدن به تست‌های واقعی fail می‌شدند.
 
-1. در مرورگر به این آدرس برو:
-   `https://github.com/avazpoors-stack/app/tree/arena/019febc8-app/.github/workflows`
-   (اگر پوشهٔ `.github/workflows` وجود نداشت، مهم نیست — خود گیت‌هاب می‌سازدش.)
-2. روی دکمهٔ **Add file → Create new file** بزن.
-3. در کادر نام فایل، دقیقاً این را بنویس:  `ci.yml`
-4. محتوای زیر را **کامل** در کادر بزرگ کپی کن:
+فایل workflow درست‌شده در همین ریپو این است:
+
+` .github/workflows/dart.yml `
+
+این فایل دو کار انجام می‌دهد:
+
+1. **Backend:** نصب وابستگی‌های Python و اجرای `pytest -q` در پوشهٔ `server/`
+2. **Flutter:** اجرای `flutter pub get`، `flutter analyze`، `flutter test` و ساخت APK دیباگ در پوشهٔ `app/`
+
+## اگر تغییر workflow از سمت ربات در GitHub ذخیره نشد
+
+گاهی GitHub به ربات اجازهٔ تغییر فایل‌های داخل `.github/workflows/` را نمی‌دهد. اگر push/CI با خطای دسترسی مواجه شد، خودت فقط یک‌بار این کار را انجام بده:
+
+1. در مرورگر برو به:
+   `https://github.com/avazpoors-stack/app/blob/arena/019fec12-app/.github/workflows/dart.yml`
+2. روی **Edit** بزن.
+3. محتوای فایل را با متن زیر جایگزین کن.
+4. روی **Commit changes** بزن و برنچ `arena/019fec12-app` را انتخاب کن.
 
 ```yaml
-name: CI
+name: Badane CI
 
 on:
   push:
+    branches:
+      - main
+      - "arena/**"
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  flutter:
-    name: Flutter (analyze + test + APK)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - name: دریافت وابستگی‌ها
-        run: flutter pub get
-      - name: تحلیل استاتیک
-        run: flutter analyze
-      - name: تست‌ها
-        run: flutter test
-      - name: بیلد APK دیباگ
-        run: flutter build apk --debug
-      - name: گزارش حجم APK
-        run: |
-          SIZE=$(stat -c%s build/app/outputs/flutter-apk/app-debug.apk)
-          echo "APK size: $SIZE bytes ($((SIZE / 1024 / 1024)) MB)"
-          test "$SIZE" -lt 104857600 && echo "OK (< 100MB)"
-      - name: آپلود APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: badane-debug-apk
-          path: app/build/app/outputs/flutter-apk/app-debug.apk
-
-  server:
+  backend:
     name: Backend (pytest)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: server
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: نصب وابستگی‌ها
-        run: pip install -r requirements.txt
-      - name: تست‌ها
+          cache: pip
+          cache-dependency-path: server/requirements.txt
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run backend tests
         run: pytest -q
+
+  flutter:
+    name: Flutter (analyze + test + debug APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Analyze Flutter app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Report APK size
+        run: |
+          APK="build/app/outputs/flutter-apk/app-debug.apk"
+          SIZE=$(stat -c%s "$APK")
+          echo "APK size: $SIZE bytes ($((SIZE / 1024 / 1024)) MB)"
+          test "$SIZE" -lt 104857600
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: badane-debug-apk
+          path: app/build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-5. روی **Commit changes** بزن (برنچ `arena/019febc8-app` را انتخاب کن — برنچ فعلی کاری).
-6. تمام! از این به بعد در هر push:
-   - تب **Actions** ریپو را باز کن → دو کار (Flutter و Backend) اجرا می‌شوند.
-   - وقتی سبز شد ✅، فایل APK از **Artifacts** قابل دانلود است: `badane-debug-apk`
+## نتیجهٔ مورد انتظار
 
-> نسخهٔ همین فایل در ریپوی محلی هست: `.github/workflows/ci.yml` — اگر خواستی اول آن را ببینی.
+بعد از اجرای موفق CI:
+
+- بخش **Backend (pytest)** باید سبز شود.
+- بخش **Flutter (analyze + test + debug APK)** باید سبز شود.
+- از قسمت **Artifacts** می‌توانی فایل `badane-debug-apk` را دانلود کنی.

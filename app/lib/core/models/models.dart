@@ -397,8 +397,10 @@ class SyncState {
             .toList(),
         profile: SyncProfile.fromJson(
             (json['profile'] as Map<String, dynamic>?) ?? <String, dynamic>{}),
-        totalPoints: json['totalPoints'] as int? ?? 0,
-        serverTime: json['serverTime'] as String? ?? '',
+        totalPoints:
+            (json['totalPoints'] as int?) ?? (json['total_points'] as int?) ?? 0,
+        serverTime:
+            (json['serverTime'] as String?) ?? (json['server_time'] as String?) ?? '',
       );
 
   final List<SyncEntry> entries;
@@ -411,5 +413,286 @@ class SyncState {
         'profile': profile.toJson(),
         'totalPoints': totalPoints,
         'serverTime': serverTime,
+      };
+}
+
+// ================= P3: جستجوی سراسری =================
+
+enum SearchCategory { exercise, program, product, venue, coach }
+
+extension SearchCategoryX on SearchCategory {
+  String get labelFa => switch (this) {
+        SearchCategory.exercise => 'حرکت',
+        SearchCategory.program => 'برنامه',
+        SearchCategory.product => 'محصول',
+        SearchCategory.venue => 'مکان',
+        SearchCategory.coach => 'مربی',
+      };
+
+  String get sectionFa => switch (this) {
+        SearchCategory.exercise => 'حرکات تمرینی',
+        SearchCategory.program => 'برنامه‌ها',
+        SearchCategory.product => 'فروشگاه',
+        SearchCategory.venue => 'مکان‌های ورزشی',
+        SearchCategory.coach => 'مربی‌هاب',
+      };
+
+  static SearchCategory fromName(String? name) => switch (name) {
+        'program' => SearchCategory.program,
+        'product' => SearchCategory.product,
+        'venue' => SearchCategory.venue,
+        'coach' => SearchCategory.coach,
+        _ => SearchCategory.exercise,
+      };
+}
+
+class SearchResult {
+  const SearchResult({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.category,
+    this.source = 'local',
+    this.comingSoon = false,
+  });
+
+  factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
+        id: json['id'] as String,
+        title: (json['title'] as String?) ?? (json['titleFa'] as String?) ?? '',
+        subtitle: json['subtitle'] as String? ?? '',
+        category: SearchCategoryX.fromName(json['category'] as String?),
+        source: json['source'] as String? ?? 'remote',
+        comingSoon:
+            (json['comingSoon'] as bool?) ?? (json['coming_soon'] as bool?) ?? false,
+      );
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final SearchCategory category;
+  final String source; // local / remote / mock
+  final bool comingSoon; // محصول/مکان/مربی تا فازهای بعد فقط پیش‌نمایش‌اند
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'subtitle': subtitle,
+        'category': category.name,
+        'source': source,
+        'comingSoon': comingSoon,
+      };
+}
+
+
+// ================= P4: مکان‌های ورزشی =================
+
+enum VenueCategory {
+  pool,
+  gym,
+  martialArts,
+  yoga,
+  crossfit,
+  ballSports,
+  tennis,
+  running,
+  corrective,
+}
+
+extension VenueCategoryX on VenueCategory {
+  String get apiName => switch (this) {
+        VenueCategory.pool => 'pool',
+        VenueCategory.gym => 'gym',
+        VenueCategory.martialArts => 'martial_arts',
+        VenueCategory.yoga => 'yoga',
+        VenueCategory.crossfit => 'crossfit',
+        VenueCategory.ballSports => 'ball_sports',
+        VenueCategory.tennis => 'tennis',
+        VenueCategory.running => 'running',
+        VenueCategory.corrective => 'corrective',
+      };
+
+  String get labelFa => switch (this) {
+        VenueCategory.pool => 'استخر',
+        VenueCategory.gym => 'بدنسازی',
+        VenueCategory.martialArts => 'رزمی',
+        VenueCategory.yoga => 'یوگا/پیلاتس',
+        VenueCategory.crossfit => 'کراس‌فیت/ایروبیک',
+        VenueCategory.ballSports => 'توپی',
+        VenueCategory.tennis => 'تنیس/راکت',
+        VenueCategory.running => 'دو/پارک',
+        VenueCategory.corrective => 'حرکت اصلاحی',
+      };
+
+  String get descFa => switch (this) {
+        VenueCategory.pool => 'شنا، آب‌درمانی و سانس‌های آزاد',
+        VenueCategory.gym => 'وزنه، دستگاه و تمرین قدرتی',
+        VenueCategory.martialArts => 'بوکس، کاراته، تکواندو و MMA',
+        VenueCategory.yoga => 'یوگا، پیلاتس، انعطاف و تنفس',
+        VenueCategory.crossfit => 'کلاس گروهی، HIIT و کراس‌فیت',
+        VenueCategory.ballSports => 'فوتبال، والیبال، بسکتبال و سالن‌های توپی',
+        VenueCategory.tennis => 'تنیس، پدل، بدمینتون و راکتی',
+        VenueCategory.running => 'پیست، پارک و مسیر تمرین هوازی',
+        VenueCategory.corrective => 'حرکت اصلاحی و بازتوانی غیرتشخیصی',
+      };
+
+  static VenueCategory fromName(String? name) => switch (name) {
+        'gym' => VenueCategory.gym,
+        'martial_arts' || 'martialArts' => VenueCategory.martialArts,
+        'yoga' => VenueCategory.yoga,
+        'crossfit' => VenueCategory.crossfit,
+        'ball_sports' || 'ballSports' => VenueCategory.ballSports,
+        'tennis' => VenueCategory.tennis,
+        'running' => VenueCategory.running,
+        'corrective' => VenueCategory.corrective,
+        _ => VenueCategory.pool,
+      };
+}
+
+enum VenueStatus { pending, approved, rejected }
+
+extension VenueStatusX on VenueStatus {
+  String get labelFa => switch (this) {
+        VenueStatus.pending => 'در انتظار تأیید',
+        VenueStatus.approved => 'تأیید شده',
+        VenueStatus.rejected => 'رد شده',
+      };
+
+  static VenueStatus fromName(String? name) => switch (name) {
+        'approved' => VenueStatus.approved,
+        'rejected' => VenueStatus.rejected,
+        _ => VenueStatus.pending,
+      };
+}
+
+class VenueTariff {
+  const VenueTariff({required this.title, required this.priceToman, this.note = ''});
+
+  factory VenueTariff.fromJson(Map<String, dynamic> json) => VenueTariff(
+        title: json['title'] as String? ?? '',
+        priceToman: (json['priceToman'] as int?) ?? (json['price_toman'] as int?) ?? 0,
+        note: json['note'] as String? ?? '',
+      );
+
+  final String title;
+  final int priceToman;
+  final String note;
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'price_toman': priceToman,
+        if (note.isNotEmpty) 'note': note,
+      };
+}
+
+class VenueDraft {
+  const VenueDraft({
+    required this.name,
+    required this.category,
+    required this.address,
+    this.city = '',
+    this.phone = '',
+    this.description = '',
+    this.lat,
+    this.lng,
+    this.tariffs = const [],
+  });
+
+  final String name;
+  final VenueCategory category;
+  final String address;
+  final String city;
+  final String phone;
+  final String description;
+  final double? lat;
+  final double? lng;
+  final List<VenueTariff> tariffs;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'category': category.apiName,
+        'city': city,
+        'address': address,
+        'phone': phone,
+        'description': description,
+        if (lat != null) 'lat': lat,
+        if (lng != null) 'lng': lng,
+        'tariffs': tariffs.map((t) => t.toJson()).toList(),
+      };
+}
+
+class Venue {
+  const Venue({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.address,
+    required this.status,
+    this.city = '',
+    this.phone = '',
+    this.description = '',
+    this.lat,
+    this.lng,
+    this.tariffs = const [],
+    this.source = 'local',
+  });
+
+  factory Venue.fromJson(Map<String, dynamic> json) => Venue(
+        id: json['id'].toString(),
+        name: json['name'] as String? ?? '',
+        category: VenueCategoryX.fromName(json['category'] as String?),
+        city: json['city'] as String? ?? '',
+        address: json['address'] as String? ?? '',
+        phone: json['phone'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        lat: (json['lat'] as num?)?.toDouble(),
+        lng: (json['lng'] as num?)?.toDouble(),
+        tariffs: (json['tariffs'] as List<dynamic>? ?? [])
+            .map((t) => VenueTariff.fromJson(t as Map<String, dynamic>))
+            .toList(),
+        status: VenueStatusX.fromName(json['status'] as String?),
+        source: json['source'] as String? ?? 'remote',
+      );
+
+  factory Venue.fromDraft(VenueDraft draft, {required String id}) => Venue(
+        id: id,
+        name: draft.name,
+        category: draft.category,
+        city: draft.city,
+        address: draft.address,
+        phone: draft.phone,
+        description: draft.description,
+        lat: draft.lat,
+        lng: draft.lng,
+        tariffs: draft.tariffs,
+        status: VenueStatus.pending,
+        source: 'local',
+      );
+
+  final String id;
+  final String name;
+  final VenueCategory category;
+  final String city;
+  final String address;
+  final String phone;
+  final String description;
+  final double? lat;
+  final double? lng;
+  final List<VenueTariff> tariffs;
+  final VenueStatus status;
+  final String source;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'category': category.apiName,
+        'city': city,
+        'address': address,
+        'phone': phone,
+        'description': description,
+        if (lat != null) 'lat': lat,
+        if (lng != null) 'lng': lng,
+        'tariffs': tariffs.map((t) => t.toJson()).toList(),
+        'status': status.name,
+        'source': source,
       };
 }

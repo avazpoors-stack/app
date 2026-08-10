@@ -5,6 +5,7 @@ import '../../core/services/app_services.dart';
 import '../../core/services/jalali.dart';
 import '../../core/services/streak.dart';
 import '../../core/theme/app_colors.dart';
+import '../search/global_search_button.dart';
 
 /// تب پیشرفت — آمار کل؛ نمودار ۷ روز در فازهای بعد.
 class ProgressScreen extends StatefulWidget {
@@ -26,7 +27,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('پیشرفت')),
+      appBar: AppBar(
+        title: const Text('پیشرفت'),
+        actions: const [GlobalSearchButton()],
+      ),
       body: FutureBuilder<UserProgress>(
         future: _future,
         builder: (context, snapshot) {

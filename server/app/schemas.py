@@ -1,10 +1,11 @@
 """اعتبارسنجی ورودی/خروجی (pydantic) — همهٔ ورودی‌ها قبل از دیتابیس اعتبارسنجی می‌شوند."""
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from .models import Role
+from .models import Role, VenueCategory, VenueStatus
 
 PHONE_PATTERN = r"^09\d{9}$"  # شمارهٔ موبایل ایران
 
@@ -127,3 +128,89 @@ class AuditOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ================= P3: جستجوی سراسری =================
+
+class SearchCategory(str, Enum):
+    exercise = "exercise"
+    program = "program"
+    product = "product"
+    venue = "venue"
+    coach = "coach"
+
+
+class SearchResultOut(BaseModel):
+    id: str = Field(max_length=80)
+    title: str = Field(max_length=120)
+    subtitle: str = Field(max_length=240)
+    category: SearchCategory
+    source: str = Field(default="server", max_length=24)
+    coming_soon: bool = False
+
+
+class SearchOut(BaseModel):
+    results: list[SearchResultOut]
+    total: int
+    server_time: datetime
+
+
+# ================= P4: مکان‌های ورزشی + نشان =================
+
+class VenueCategoryOut(BaseModel):
+    id: VenueCategory
+    label: str
+    description: str
+
+
+class VenueTariffIn(BaseModel):
+    title: str = Field(min_length=2, max_length=80)
+    price_toman: int = Field(ge=0, le=1_000_000_000)
+    note: Optional[str] = Field(default=None, max_length=120)
+
+
+class VenueCreateIn(BaseModel):
+    name: str = Field(min_length=2, max_length=80)
+    category: VenueCategory
+    city: str = Field(default="", max_length=64)
+    address: str = Field(min_length=5, max_length=240)
+    phone: str = Field(default="", max_length=24, pattern=r"^[0-9+\- ]*$")
+    description: str = Field(default="", max_length=500)
+    lat: Optional[float] = Field(default=None, ge=-90, le=90)
+    lng: Optional[float] = Field(default=None, ge=-180, le=180)
+    tariffs: list[VenueTariffIn] = Field(default_factory=list, max_length=20)
+
+
+class VenueUpdateIn(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=2, max_length=80)
+    category: Optional[VenueCategory] = None
+    city: Optional[str] = Field(default=None, max_length=64)
+    address: Optional[str] = Field(default=None, min_length=5, max_length=240)
+    phone: Optional[str] = Field(default=None, max_length=24, pattern=r"^[0-9+\- ]*$")
+    description: Optional[str] = Field(default=None, max_length=500)
+    lat: Optional[float] = Field(default=None, ge=-90, le=90)
+    lng: Optional[float] = Field(default=None, ge=-180, le=180)
+    tariffs: Optional[list[VenueTariffIn]] = Field(default=None, max_length=20)
+
+
+class VenueRejectIn(BaseModel):
+    reason: str = Field(min_length=2, max_length=240)
+
+
+class VenueOut(BaseModel):
+    id: int
+    owner_id: int
+    name: str
+    category: VenueCategory
+    city: str
+    address: str
+    phone: str
+    description: str
+    lat: Optional[float]
+    lng: Optional[float]
+    tariffs: list[dict]
+    status: VenueStatus
+    rejection_reason: str
+    created_at: datetime
+    updated_at: datetime
+    approved_at: Optional[datetime]

@@ -4,6 +4,7 @@ import '../../core/models/models.dart';
 import '../../core/services/app_services.dart';
 import '../../core/services/remote_api.dart';
 import '../../core/theme/app_colors.dart';
+import '../search/global_search_button.dart';
 
 /// تب پروفایل — حساب کاربر (P2)، تنظیمات (لحن، تم)، وضعیت سینک.
 class ProfileScreen extends StatefulWidget {
@@ -134,7 +135,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('پروفایل')),
+      appBar: AppBar(
+        title: const Text('پروفایل'),
+        actions: const [GlobalSearchButton()],
+      ),
       body: FutureBuilder<UserProgress>(
         future: _future,
         builder: (context, snapshot) {

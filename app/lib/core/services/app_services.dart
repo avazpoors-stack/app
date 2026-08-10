@@ -6,8 +6,10 @@ import 'auth_service.dart';
 import 'content_repository.dart';
 import 'progress_repository.dart';
 import 'remote_api.dart';
+import 'search_service.dart';
 import 'storage.dart';
 import 'sync_service.dart';
+import 'venue_service.dart';
 
 /// سرویس‌های برنامه — یکجا و تزریق‌پذیر (تست‌پذیری + جایگزینی Local/Remote).
 class AppServices {
@@ -18,6 +20,8 @@ class AppServices {
     required this.account,
     required this.auth,
     required this.sync,
+    required this.search,
+    required this.venues,
   });
 
   final ContentRepository content;
@@ -26,6 +30,8 @@ class AppServices {
   final AccountRepository account;
   final AuthService auth;
   final SyncService sync;
+  final SearchService search;
+  final VenueService venues;
 
   /// تم برنامه — از پروفایل/پایین‌ترین صفحه قابل تغییر (دارک/لایت/سیستم).
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
@@ -42,7 +48,11 @@ class AppServices {
   static Future<AppServices> createDefault() async {
     final dir = await StorageChannel.getFilesDir();
     final store = dir != null ? FileStore(dir) : InMemoryStore();
-    return _build(store, const String.fromEnvironment('BADANE_API_URL'));
+    return _build(
+      store,
+      const String.fromEnvironment('BADANE_API_URL'),
+      neshanApiKey: const String.fromEnvironment('NESHAN_API_KEY'),
+    );
   }
 
   static AppServices forTesting({
@@ -50,6 +60,7 @@ class AppServices {
     KeyValueStore? store,
     DateTime? now,
     RemoteApi? api,
+    String neshanApiKey = '',
   }) {
     return _build(
       store ?? InMemoryStore(),
@@ -57,6 +68,7 @@ class AppServices {
       contentOverrides: contentOverrides,
       now: now,
       api: api,
+      neshanApiKey: neshanApiKey,
     );
   }
 
@@ -66,15 +78,17 @@ class AppServices {
     Map<String, String>? contentOverrides,
     DateTime? now,
     RemoteApi? api,
+    String neshanApiKey = '',
   }) {
     final progress = ProgressRepository(store);
     final account = AccountRepository(store);
+    final content = ContentRepository(overrides: contentOverrides);
     final remote = api ??
         (baseUrl != null && baseUrl.isNotEmpty
             ? HttpRemoteApi(baseUrl: baseUrl)
             : const OfflineRemoteApi());
     final services = AppServices(
-      content: ContentRepository(overrides: contentOverrides),
+      content: content,
       progress: progress,
       account: account,
       auth: AuthService(repository: account, api: remote),
@@ -83,6 +97,13 @@ class AppServices {
         api: remote,
         progress: progress,
         clock: Clock(fixed: now),
+      ),
+      search: SearchService(content: content, store: store, api: remote),
+      venues: VenueService(
+        store: store,
+        api: remote,
+        account: account,
+        neshanApiKey: neshanApiKey,
       ),
       clock: Clock(fixed: now),
     );
