@@ -93,6 +93,17 @@ class _TodayWorkoutScreenState extends State<TodayWorkoutScreen> {
       'workoutComplete',
       progress.workouts.length,
     );
+    // صف سینک (P2): رکورد تمرین برای همگام‌سازی آفلاین-اول؛
+    // اگر حساب/اینترنت نباشد در صف محلی می‌ماند (آفلاین-اول).
+    try {
+      await services.sync.recordWorkout(
+        programId: widget.program.id,
+        sessionId: widget.session.id,
+        points: result.earned,
+      );
+    } catch (_) {
+      // صف محلی ذخیره شده؛ همگام‌سازی بعداً انجام می‌شود
+    }
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(

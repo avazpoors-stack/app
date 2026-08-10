@@ -5,7 +5,7 @@
 ## روش: اضافه کردن فایل در گیت‌هاب (۳ دقیقه، بدون نیاز به تخصص)
 
 1. در مرورگر به این آدرس برو:
-   `https://github.com/avazpoors-stack/app/tree/arena/019fe750-app/.github/workflows`
+   `https://github.com/avazpoors-stack/app/tree/arena/019febc8-app/.github/workflows`
    (اگر پوشهٔ `.github/workflows` وجود نداشت، مهم نیست — خود گیت‌هاب می‌سازدش.)
 2. روی دکمهٔ **Add file → Create new file** بزن.
 3. در کادر نام فایل، دقیقاً این را بنویس:  `ci.yml`
@@ -66,7 +66,7 @@ jobs:
         run: pytest -q
 ```
 
-5. روی **Commit changes** بزن (برنچ `arena/019fe750-app` را انتخاب کن).
+5. روی **Commit changes** بزن (برنچ `arena/019febc8-app` را انتخاب کن — برنچ فعلی کاری).
 6. تمام! از این به بعد در هر push:
    - تب **Actions** ریپو را باز کن → دو کار (Flutter و Backend) اجرا می‌شوند.
    - وقتی سبز شد ✅، فایل APK از **Artifacts** قابل دانلود است: `badane-debug-apk`

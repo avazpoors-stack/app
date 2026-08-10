@@ -35,6 +35,12 @@ class ProgressRepository {
     await _store.write(_key, _cache!.toJsonString());
   }
 
+  /// ذخیرهٔ وضعیت فعلی — بعد از تغییر مستقیم (مثل ادغام سینک).
+  Future<void> save() async {
+    await load();
+    await _persist();
+  }
+
   Future<void> setEnergy(EnergyLevel level, DateTime now) async {
     await load();
     _cache!.energyLevel = level;

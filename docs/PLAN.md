@@ -186,12 +186,13 @@
 
 ## Build Phases
 
-- [ ] Phase 0 (P0): اسکلت دوطرفه (Flutter + FastAPI + CI)
+- [x] Phase 0 (P0): اسکلت دوطرفه (Flutter + FastAPI + CI)
   Done when: اپ با ۴ تب و تم بام دارک/لایت اجرا می‌شود؛ `/health` جواب می‌دهد؛ `flutter test`/`pytest` سبز؛ CI APK دیباگ می‌سازد. Covers: R10؛ checks: A2, A4, A5, A9.
-- [ ] Phase 1 (P1): هستهٔ تمرین آفلاین-اول
+- [x] Phase 1 (P1): هستهٔ تمرین آفلاین-اول
   Done when: چرخهٔ طلایی کامل + ۴ برنامهٔ JSON + تست‌های Alpha/Beta سبز + کارت اشتراک. Covers: R1-R4؛ checks: A3.
 - [ ] Phase 2 (P2): بک‌اند، حساب‌ها، سینک
   Done when: ثبت‌نام/ورود ۵ نقش + OTP Mock + پروفایل/تنظیمات + سینک دوطرفه + امنیت‌های فاز. Covers: R5, R6؛ checks: A1, A7, A8.
+  وضعیت 2026-08-10: بک‌اند کامل (۲۳ تست pytest سبز محلی + تست زندهٔ curl)؛ Flutter: AccountRepository/AuthService/SyncService + پروفایل (ورود OTP، تم، سینک، خروج) + ۶ تست نوشته‌شده (اجرا در CI). باقی‌مانده: تأیید CI و تست‌های Flutter.
 - [ ] Phase 3 (P3): جستجوی سراسری
   Done when: جستجو در ۵ نوع داده زیر ۱ ثانیه + تاریخچه + حالت خالی. Covers: R7.
 - [ ] Phase 4 (P4): مکان‌های ورزشی + نشان
