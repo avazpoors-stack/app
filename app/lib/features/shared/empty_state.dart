@@ -18,7 +18,7 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final muted = Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+    final muted = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),

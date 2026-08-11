@@ -141,7 +141,7 @@ class _GreetingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final streak = _streakOf(progress, today);
-    final rank = _rankOf(progress);
+    final rank = _rankOf(context, progress);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -201,7 +201,7 @@ class _GreetingCard extends StatelessWidget {
         int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
   }
 
-  String _rankOf(UserProgress p) {
+  String _rankOf(BuildContext context, UserProgress p) {
     final ranks = BadaneScope.of(context).content.ranks;
     if (ranks.isEmpty) return '';
     var current = ranks.first;

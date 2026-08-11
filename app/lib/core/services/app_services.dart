@@ -7,6 +7,7 @@ import 'content_repository.dart';
 import 'progress_repository.dart';
 import 'remote_api.dart';
 import 'search_service.dart';
+import 'shop_service.dart';
 import 'storage.dart';
 import 'sync_service.dart';
 import 'venue_service.dart';
@@ -22,6 +23,7 @@ class AppServices {
     required this.sync,
     required this.search,
     required this.venues,
+    required this.shop,
   });
 
   final ContentRepository content;
@@ -32,6 +34,7 @@ class AppServices {
   final SyncService sync;
   final SearchService search;
   final VenueService venues;
+  final ShopService shop;
 
   /// تم برنامه — از پروفایل/پایین‌ترین صفحه قابل تغییر (دارک/لایت/سیستم).
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
@@ -105,6 +108,7 @@ class AppServices {
         account: account,
         neshanApiKey: neshanApiKey,
       ),
+      shop: ShopService(store: store, api: remote, account: account),
       clock: Clock(fixed: now),
     );
     return services;

@@ -158,6 +158,42 @@ class FakeRemoteApi implements RemoteApi {
   }
 
   @override
+  Future<List<Product>> listProducts({
+    String? category,
+    String? brand,
+    String? query,
+    int? minPrice,
+    int? maxPrice,
+    int limit = 50,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return const [];
+  }
+
+  @override
+  Future<Product> createProduct({
+    required String accessToken,
+    required ProductDraft draft,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return Product.fromDraft(draft, id: 'remote-prod', sellerId: 1);
+  }
+
+  @override
+  Future<OrderResult> createOrder({
+    required String accessToken,
+    required List<OrderItemDraft> items,
+    required String idempotencyKey,
+  }) async {
+    if (offline) throw const ApiException(0, 'آفلاین');
+    return OrderResult(
+      orderId: 'mock-$idempotencyKey',
+      status: 'payment_pending',
+      totalToman: items.fold(0, (s, i) => s + i.priceToman * i.quantity),
+    );
+  }
+
+  @override
   Future<void> logout(String refreshToken) async {
     if (offline) throw const ApiException(0, 'آفلاین');
     loggedOut = true;

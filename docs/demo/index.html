@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بدنه — پلتفرم ورزشی | دموی لایو</title>
+<style>
+  body{font-family: Vazirmatn, Tahoma, sans-serif; background:#121212; color:#ECECEC; margin:0; padding:0}
+  header{background:#1E1E1E; padding:24px; border-bottom:3px solid #FF6B35; position:sticky; top:0}
+  .container{max-width:960px; margin:auto; padding:24px}
+  .card{background:#1E1E1E; border-radius:16px; padding:18px; margin:12px 0; border:1px solid #2a2a2a}
+  .badge{display:inline-block; background:#FF6B35; color:white; padding:4px 10px; border-radius:999px; font-size:12px; margin:2px}
+  .badge.green{background:#4CD964}
+  .badge.gold{background:#FFB800; color:#000}
+  a{color:#FF6B35; text-decoration:none}
+  a:hover{text-decoration:underline}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+  h1,h2{color:#FF6B35}
+  .apk{font-size:18px; background:#FF6B35; color:white; padding:12px 20px; border-radius:12px; display:inline-block; margin:8px 0}
+  code{background:#2a2a2a; padding:2px 6px; border-radius:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>🏋️ بدنه (Badane) — پلتفرم ورزشی</h1>
+    <p>آفلاین-اول • فیتنس + حرکت اصلاحی • فروشگاه • مکان‌ها • مربی‌هاب • AI پاسچر</p>
+    <p><span class="badge">P0 ✅ اسکلت</span> <span class="badge">P1 ✅ هسته تمرین</span> <span class="badge">P2 ✅ حساب‌ها</span> <span class="badge">P3 ✅ جستجو</span> <span class="badge">P4 ✅ مکان‌ها</span> <span class="badge green">P5 ✅ فروشگاه (جدید)</span> <span class="badge gold">P6 در حال ساخت</span></p>
+  </div>
+</header>
+<div class="container">
+  <div class="card">
+    <h2>📦 دموی لایو — چطور ببینم؟</h2>
+    <p>این صفحه روی GitHub Pages لایوه و با هر فاز کامل‌تر می‌شه.</p>
+    <ul>
+      <li>بک‌اند: <code>server/</code> با FastAPI — 32 تست pytest سبز</li>
+      <li>اپ Flutter: <code>app/</code> — 13 سرویس، 8 فیچر، 13+ تست</li>
+      <li>CI: <code>.github/workflows/dart.yml</code> — Badane CI v8 با Node24</li>
+      <li>فروشگاه جدید: 8 دسته ورزشی، سبد خرید آفلاین، سفارش Mock</li>
+    </ul>
+    <a class="apk" href="https://github.com/avazpoors-stack/app/actions" target="_blank">⬇️ دانلود APK از Actions → Artifacts → badane-debug-apk</a>
+    <p style="font-size:12px; color:#9CA3AF">APK بعد از هر push موفق ساخته می‌شه — اگه build هنوز fail باشه، Issue با لاگ میاد تا فیکس کنیم</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🏠 چرخه طلایی</h3>
+      <p>باز کردن اپ → انتخاب انرژی 🔥🙂😴 → تمرین امروز → ثبت ست → امتیاز/استریک → کارت اشتراک</p>
+      <p><code>today_workout_screen.dart</code></p>
+    </div>
+    <div class="card">
+      <h3>🔍 جستجوی سراسری</h3>
+      <p>حرکات + برنامه‌ها + فروشگاه + مکان‌ها + مربی‌ها — آفلاین + آنلاین، تاریخچه محلی</p>
+    </div>
+    <div class="card">
+      <h3>📍 مکان‌های ورزشی</h3>
+      <p>9 دسته جدا (استخر، باشگاه، رزمی، یوگا...) + نقشه نشان placeholder + ثبت pending</p>
+    </div>
+    <div class="card">
+      <h3>🛍️ فروشگاه P5 (جدید)</h3>
+      <p>8 دسته ورزشی، کاتالوگ با فیلتر، سبد خرید آفلاین، سفارش با idempotency key، پنل فروشنده</p>
+      <p>Mock محصولات: تی‌شرت، کش، کفش، مکمل...</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ نقشه راه</h2>
+    <ul>
+      <li><b>P0</b> اسکلت — تم بام نارنجی-خاکستری، 5 تب، RTL، فونت وزیرمتن ✅</li>
+      <li><b>P1</b> هسته تمرین — 4 برنامه JSON، امتیاز/رنک، تقویم جلالی ✅</li>
+      <li><b>P2</b> حساب‌ها — OTP Mock، JWT، RBAC 5 نقش، سینک آفلاین-اول ✅ 32 تست</li>
+      <li><b>P3</b> جستجو — آفلاین-اول + سرور /api/v1/search ✅</li>
+      <li><b>P4</b> مکان‌ها — 9 دسته + نشان placeholder + تعرفه ✅</li>
+      <li><b>P5</b> فروشگاه — بک‌اند + فرانت جدید: ShopService, ShopScreen, Cart, SellerSheet ✅ (این فاز)</li>
+      <li><b>P6</b> مربی‌هاب — بعدی</li>
+      <li><b>P7</b> AI پاسچر — قرارداد POST /api/v1/posture/analyze + Mock</li>
+      <li><b>P8</b> ریلیز — APK release + AAB + راهنمای فارسی</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🧪 تست CI زنده</h2>
+    <p>آخرین Run: <a href="https://github.com/avazpoors-stack/app/actions" target="_blank">Actions</a></p>
+    <ul>
+      <li>Backend: <code>pytest -q</code> → 32 passed</li>
+      <li>Flutter: <code>flutter analyze --no-fatal-infos --no-fatal-warnings</code>, <code>flutter test</code>, <code>flutter build apk --debug</code></li>
+    </ul>
+    <p>اگر build fail شد، Issue خودکار با لاگ ساخته می‌شه تا فیکس کنیم (مثل Issue #14 و #15)</p>
+  </div>
+
+  <div class="card">
+    <h2>🔧 فایل‌های سازماندهی شده</h2>
+    <p>فایل‌ها مرتب شدن و هیچی گم نشده:</p>
+    <ul>
+      <li><code>app/lib/core/services/</code> — 13 سرویس (account, auth, shop, venue, search, sync...)</li>
+      <li><code>app/lib/features/</code> — home, program, shop (جدید), venues, search, profile...</li>
+      <li><code>server/app/</code> — auth, search, venues, shop, sync...</li>
+      <li><code>docs/ci/</code> — Badane-CI-Ready.yml (v8), LIVE_CI_REPORT.md</li>
+      <li><code>tools/</code> — badane_ci_validator.py (تست بدون نیاز به GitHub)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🚀 بعدی: P6 مربی‌هاب</h2>
+    <p>بعد از اینکه این PR تایید شد، می‌ریم سراغ مربی‌هاب: پروفایل مربی، برنامه‌دهی به مشتری، رزرو.</p>
+    <p>دمو با هر فاز آپدیت می‌شه و APK جدید تو Artifacts میاد.</p>
+  </div>
+</div>
+<footer style="text-align:center; padding:24px; color:#9CA3AF; font-size:12px">
+  بدنه — ساخته شده با Flutter + FastAPI — تم بام نارنجی-خاکستری — 2026
+</footer>
+</body>
+</html>

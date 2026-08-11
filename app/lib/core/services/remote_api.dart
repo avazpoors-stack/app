@@ -64,6 +64,23 @@ abstract class RemoteApi {
     required String accessToken,
     required VenueDraft draft,
   });
+  Future<List<Product>> listProducts({
+    String? category,
+    String? brand,
+    String? query,
+    int? minPrice,
+    int? maxPrice,
+    int limit = 50,
+  });
+  Future<Product> createProduct({
+    required String accessToken,
+    required ProductDraft draft,
+  });
+  Future<OrderResult> createOrder({
+    required String accessToken,
+    required List<OrderItemDraft> items,
+    required String idempotencyKey,
+  });
   Future<void> logout(String refreshToken);
 }
 
@@ -265,6 +282,86 @@ class HttpRemoteApi implements RemoteApi {
     return Venue.fromJson(data);
   }
 
+  @override
+  Future<List<Product>> listProducts({
+    String? category,
+    String? brand,
+    String? query,
+    int? minPrice,
+    int? maxPrice,
+    int limit = 50,
+  }) async {
+    final queryString = Uri(queryParameters: <String, String>{
+      'limit': limit.clamp(1, 100).toString(),
+      if (category != null && category.isNotEmpty) 'category': category,
+      if (brand != null && brand.isNotEmpty) 'brand': brand,
+      if (query != null && query.trim().length >= 2) 'q': query.trim(),
+      if (minPrice != null) 'min_price': minPrice.toString(),
+      if (maxPrice != null) 'max_price': maxPrice.toString(),
+    }).query;
+    final data = await _send('GET', '/shop/products?$queryString', <String, dynamic>{});
+    // endpoint returns list directly or {items: []}
+    final list = data['items'] is List
+        ? data['items'] as List<dynamic>
+        : (data['results'] is List
+            ? data['results'] as List<dynamic>
+            : (data is List ? data : []));
+    // Actually _send returns Map, so we handle both
+    final rawList = data['items'] as List<dynamic>? ??
+        data['results'] as List<dynamic>? ??
+        (data is List ? data as List<dynamic> : <dynamic>[]);
+    // Fallback: if data itself is list wrapper handled earlier
+    // For shop, API returns List directly (via _sendRaw logic)
+    // Let's try to handle generic
+    if (data is Map && data.containsKey('items')) {
+      return (data['items'] as List<dynamic>).map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
+    }
+    // If _send returned {'items': [...]} we already have
+    // If API returns raw list, our _send wraps it as {'items': list}
+    final items = data['items'] as List<dynamic>? ?? [];
+    return items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  @override
+  Future<Product> createProduct({
+    required String accessToken,
+    required ProductDraft draft,
+  }) async {
+    final data = await _send('POST', '/shop/products', draft.toJson(), token: accessToken);
+    return Product.fromJson(data);
+  }
+
+  @override
+  Future<OrderResult> createOrder({
+    required String accessToken,
+    required List<OrderItemDraft> items,
+    required String idempotencyKey,
+  }) async {
+    final client = HttpClient()..connectionTimeout = _timeout;
+    try {
+      final uri = Uri.parse('$baseUrl/shop/orders');
+      final request = await client.postUrl(uri);
+      request.headers.contentType = ContentType.json;
+      request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $accessToken');
+      request.headers.set('Idempotency-Key', idempotencyKey);
+      request.add(utf8.encode(jsonEncode({
+        'items': items.map((e) => e.toJson()).toList(),
+      })));
+      final response = await request.close().timeout(_timeout);
+      final text = await response.transform(utf8.decoder).join();
+      final data = text.isEmpty ? <String, dynamic>{} : jsonDecode(text);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        final detail = data is Map<String, dynamic> ? data['detail'] as String? : null;
+        throw ApiException(response.statusCode, detail ?? 'خطا در ثبت سفارش');
+      }
+      return OrderResult.fromJson(data as Map<String, dynamic>);
+    } on SocketException {
+      throw const ApiException(0, 'به اینترنت دسترسی نیست');
+    } finally {
+      client.close();
+    }
+  }
+
   List<Map<String, dynamic>> _listFromJson(Map<String, dynamic> data) {
     // این متد فقط برای سازگاری با endpointهایی است که ممکن است لیست خام یا wrapper بدهند.
     final raw = data['results'] as List<dynamic>? ?? data['items'] as List<dynamic>?;
@@ -351,6 +448,32 @@ class OfflineRemoteApi implements RemoteApi {
   Future<Venue> createVenue({
     required String accessToken,
     required VenueDraft draft,
+  }) async =>
+      _offline();
+
+  @override
+  Future<List<Product>> listProducts({
+    String? category,
+    String? brand,
+    String? query,
+    int? minPrice,
+    int? maxPrice,
+    int limit = 50,
+  }) async =>
+      const [];
+
+  @override
+  Future<Product> createProduct({
+    required String accessToken,
+    required ProductDraft draft,
+  }) async =>
+      _offline();
+
+  @override
+  Future<OrderResult> createOrder({
+    required String accessToken,
+    required List<OrderItemDraft> items,
+    required String idempotencyKey,
   }) async =>
       _offline();
 
