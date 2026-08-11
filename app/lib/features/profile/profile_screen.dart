@@ -355,7 +355,7 @@ class _AuthSheetState extends State<_AuthSheet> {
       setState(() {
         _codeRequested = true;
         _devCode = result.code;
-        if (result.code != null) _code.text = result.code;
+        if (result.code != null) _code.text = result.code!;
       });
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -435,7 +435,7 @@ class _AuthSheetState extends State<_AuthSheet> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.orange.withOpacity(0.12),
+                      color: AppColors.orange.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

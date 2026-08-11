@@ -131,8 +131,8 @@ class JalaliDate {
   }
 
   String get faYear => faDigits(year.toString());
-  String get faMonth => faDigits(month.toString());
-  String get faDay => faDigits(day.toString());
+  String get faMonth => faDigits(month.toString().padLeft(2, '0'));
+  String get faDay => faDigits(day.toString().padLeft(2, '0'));
 
   /// مثال: ۱۴۰۵/۰۵/۱۹
   String formatFa() => '$faYear/$faMonth/$faDay';

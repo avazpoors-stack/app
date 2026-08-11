@@ -4,9 +4,10 @@ import '../../features/home/home_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/program/program_screen.dart';
 import '../../features/progress/progress_screen.dart';
+import '../../features/shop/shop_screen.dart';
 
-/// پوستهٔ اصلی اپ: ۴ تب (خانه / برنامه / پیشرفت / پروفایل)
-/// — ساختار ناوبری مسترپلن بخش ۲.۲
+/// پوستهٔ اصلی اپ: ۵ تب (خانه / برنامه / فروشگاه / پیشرفت / پروفایل)
+/// — ساختار ناوبری مسترپلن بخش ۲.۲ + فروشگاه P5
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -20,6 +21,7 @@ class _AppShellState extends State<AppShell> {
   static const List<Widget> _screens = [
     HomeScreen(),
     ProgramScreen(),
+    ShopScreen(),
     ProgressScreen(),
     ProfileScreen(),
   ];
@@ -41,6 +43,11 @@ class _AppShellState extends State<AppShell> {
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
             label: 'برنامه',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_bag_outlined),
+            selectedIcon: Icon(Icons.shopping_bag),
+            label: 'فروشگاه',
           ),
           NavigationDestination(
             icon: Icon(Icons.insights_outlined),

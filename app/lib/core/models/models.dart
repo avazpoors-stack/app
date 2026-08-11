@@ -696,3 +696,154 @@ class Venue {
         'source': source,
       };
 }
+
+// ================= P5: فروشگاه ورزشی =================
+
+class Product {
+  const Product({
+    required this.id,
+    required this.sellerId,
+    required this.name,
+    required this.category,
+    required this.brand,
+    required this.priceToman,
+    required this.stock,
+    required this.approved,
+    this.source = 'local',
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
+        id: json['id'].toString(),
+        sellerId: (json['seller_id'] as int?) ?? (json['sellerId'] as int?) ?? 0,
+        name: json['name'] as String? ?? '',
+        category: json['category'] as String? ?? '',
+        brand: json['brand'] as String? ?? '',
+        priceToman: (json['price_toman'] as int?) ?? (json['priceToman'] as int?) ?? 0,
+        stock: json['stock'] as int? ?? 0,
+        approved: json['approved'] as bool? ?? false,
+        source: json['source'] as String? ?? 'remote',
+      );
+
+  factory Product.fromDraft(ProductDraft draft, {required String id, required int sellerId}) =>
+      Product(
+        id: id,
+        sellerId: sellerId,
+        name: draft.name,
+        category: draft.category,
+        brand: draft.brand,
+        priceToman: draft.priceToman,
+        stock: draft.stock,
+        approved: false,
+        source: 'local',
+      );
+
+  final String id;
+  final int sellerId;
+  final String name;
+  final String category;
+  final String brand;
+  final int priceToman;
+  final int stock;
+  final bool approved;
+  final String source;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'seller_id': sellerId,
+        'name': name,
+        'category': category,
+        'brand': brand,
+        'price_toman': priceToman,
+        'stock': stock,
+        'approved': approved,
+        'source': source,
+      };
+}
+
+class ProductDraft {
+  const ProductDraft({
+    required this.name,
+    required this.category,
+    required this.brand,
+    required this.priceToman,
+    required this.stock,
+  });
+
+  final String name;
+  final String category;
+  final String brand;
+  final int priceToman;
+  final int stock;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'category': category,
+        'brand': brand,
+        'price_toman': priceToman,
+        'stock': stock,
+      };
+}
+
+class CartItem {
+  const CartItem({required this.product, required this.quantity});
+
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
+        product: Product.fromJson(json['product'] as Map<String, dynamic>),
+        quantity: json['quantity'] as int? ?? 1,
+      );
+
+  final Product product;
+  final int quantity;
+
+  Map<String, dynamic> toJson() => {
+        'product': product.toJson(),
+        'quantity': quantity,
+      };
+}
+
+class OrderItemDraft {
+  const OrderItemDraft({
+    required this.productId,
+    required this.quantity,
+    required this.priceToman,
+  });
+
+  final String productId;
+  final int quantity;
+  final int priceToman;
+
+  Map<String, dynamic> toJson() => {
+        'product_id': productId,
+        'quantity': quantity,
+        'price_toman': priceToman,
+      };
+}
+
+class OrderResult {
+  const OrderResult({
+    required this.orderId,
+    required this.status,
+    required this.totalToman,
+    this.paymentUrl,
+  });
+
+  factory OrderResult.fromJson(Map<String, dynamic> json) => OrderResult(
+        orderId: json['order_id'] as String? ?? (json['orderId'] as String?) ?? '',
+        status: json['status'] as String? ?? 'payment_pending',
+        totalToman: (json['total_toman'] as int?) ?? (json['totalToman'] as int?) ?? 0,
+        paymentUrl: json['payment_url'] as String? ?? json['paymentUrl'] as String?,
+      );
+
+  final String orderId;
+  final String status;
+  final int totalToman;
+  final String? paymentUrl;
+
+  Map<String, dynamic> toJson() => {
+        'order_id': orderId,
+        'status': status,
+        'total_toman': totalToman,
+        if (paymentUrl != null) 'payment_url': paymentUrl,
+      };
+}
+

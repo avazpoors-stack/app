@@ -15,7 +15,7 @@ class AuthService {
   Future<bool> isLoggedIn() async => await repository.loadAccount() != null;
 
   /// درخواست کد تأیید — در حالت توسعه کد در نتیجه برمی‌گردد.
-  Future<OtpRequestResult> requestOtp(String phone) {
+  Future<OtpRequestResult> requestOtp(String phone) async {
     if (!api.enabled) {
       throw const ApiException(0, 'برای ورود به اینترنت نیاز داری');
     }

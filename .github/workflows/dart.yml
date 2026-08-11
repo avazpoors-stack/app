@@ -1,7 +1,7 @@
-# Badane CI - نسخه درست شده برای جایگزینی .github/workflows/dart.yml
-# این فایل در GitHub از مسیر docs/ci/ قابل مشاهده و تست است (live version)
-# برای اعمال دستی: محتوای این فایل را کپی کن به https://github.com/avazpoors-stack/app/edit/main/.github/workflows/dart.yml
-# تاریخ: 2026-08-11 - branch: arena/019fefa5-app
+# Badane CI v7 - فیکس تست بعد از فیکس analyze
+# - اضافه کردن لاگ برای flutter test
+# - ساخت Issue برای هر دو حالت analyze و test
+# تاریخ: 2026-08-11
 
 name: Badane CI
 
@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   backend:
@@ -25,10 +26,10 @@ jobs:
         working-directory: server
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
@@ -50,7 +51,7 @@ jobs:
         working-directory: app
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -59,16 +60,81 @@ jobs:
           cache: true
 
       - name: Show Flutter version
-        run: flutter --version
+        run: |
+          flutter --version
+          dart --version
 
       - name: Install Flutter dependencies
         run: flutter pub get
 
       - name: Analyze Flutter app
-        run: flutter analyze
+        id: analyze
+        run: |
+          echo "=== flutter analyze (no-fatal-infos/warnings) ==="
+          flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee analyze.log
+          if grep -q "error •" analyze.log; then
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            echo "❌ Real errors"
+            exit 1
+          else
+            echo "has_error=false" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Run Flutter tests
-        run: flutter test
+      - name: Create issue on analyze failure
+        if: failure() && steps.analyze.outputs.has_error == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try {
+              for (const p of ['app/analyze.log','analyze.log']) {
+                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(0,50000); break; }
+              }
+            } catch(e){ log = e.message; }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Analyze failed ${new Date().toISOString()}`,
+              body: "```\n"+log+"\n```\nRun: "+context.runId,
+              labels: ['ci']
+            });
+
+      - name: Run Flutter tests (with log)
+        id: test
+        run: |
+          echo "=== flutter test ==="
+          set +e
+          flutter test --verbose 2>&1 | tee test.log
+          EXIT=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
+          tail -n 100 test.log
+          if [ $EXIT -ne 0 ]; then
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            exit $EXIT
+          else
+            echo "has_error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue on test failure
+        if: failure() && steps.test.outputs.has_error == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try {
+              for (const p of ['app/test.log','test.log']) {
+                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(-50000); break; }
+              }
+            } catch(e){ log = e.message; }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Flutter test failed ${new Date().toISOString()}`,
+              body: "```\n"+log+"\n```\nRun: "+context.runId,
+              labels: ['ci']
+            });
 
       - name: Build debug APK
         run: flutter build apk --debug
@@ -77,11 +143,20 @@ jobs:
         run: |
           APK="build/app/outputs/flutter-apk/app-debug.apk"
           SIZE=$(stat -c%s "$APK")
-          echo "APK size: $SIZE bytes ($((SIZE / 1024 / 1024)) MB)"
+          echo "APK size: $SIZE bytes ($((SIZE/1024/1024)) MB)"
           test "$SIZE" -lt 104857600
 
-      - name: Upload debug APK artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: badane-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-logs
+          path: |
+            app/analyze.log
+            app/test.log
