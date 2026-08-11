@@ -32,7 +32,9 @@ class _SearchScreenState extends State<SearchScreen> {
     _historyFuture = Future.value(const []);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final services = BadaneScope.of(context);
-      setState(() => _historyFuture = services.search.history());
+      setState(() {
+        _historyFuture = services.search.history();
+      });
       if (_controller.text.trim().isNotEmpty) {
         _runSearch(_controller.text);
       }
@@ -55,7 +57,9 @@ class _SearchScreenState extends State<SearchScreen> {
     final services = BadaneScope.of(context);
     await services.search.rememberQuery(value);
     if (!mounted) return;
-    setState(() => _historyFuture = services.search.history());
+    setState(() {
+      _historyFuture = services.search.history();
+    });
     _runSearch(value);
   }
 
@@ -69,7 +73,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _selectCategory(SearchCategory? category) {
-    setState(() => _category = category);
+    setState(() {
+      _category = category;
+    });
     _runSearch(_controller.text);
   }
 
@@ -77,7 +83,9 @@ class _SearchScreenState extends State<SearchScreen> {
     final services = BadaneScope.of(context);
     await services.search.clearHistory();
     if (!mounted) return;
-    setState(() => _historyFuture = services.search.history());
+    setState(() {
+      _historyFuture = services.search.history();
+    });
   }
 
   Future<void> _openResult(SearchResult result) async {

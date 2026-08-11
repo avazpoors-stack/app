@@ -277,7 +277,7 @@ class _ExerciseCard extends StatelessWidget {
                 for (var i = 1; i <= se.sets; i++) ...[
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: allLogged
+                      onPressed: isLogged(se.exerciseId, i)
                           ? null
                           : () => onLogSet(se, i),
                       style: OutlinedButton.styleFrom(

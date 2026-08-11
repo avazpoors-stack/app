@@ -45,7 +45,7 @@ void main() {
     await sync.recordWorkout(programId: 'starter', sessionId: 's1', points: 45);
     expect(await sync.pendingCount(), 1);
 
-    // بعد آنلاین + حساب: رکورد جدید → push می‌شود
+    // بعد آنلاین + حساب: رکورد جدید → push می‌شود (یک رکورد برای هر روز، پس دومی جایگزین اولی)
     await accountRepo.saveAccount(const UserAccount(
       phone: '09120000001',
       name: 'علی',
@@ -57,7 +57,7 @@ void main() {
     await sync.recordWorkout(programId: 'starter', sessionId: 's2', points: 30);
 
     expect(api.pushes, hasLength(1));
-    expect(api.pushes.single.entries, hasLength(2));
+    expect(api.pushes.single.entries, hasLength(1));
     expect(await sync.pendingCount(), 0);
   });
 
