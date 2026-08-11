@@ -66,12 +66,59 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
+def _rate_limit_rules(phone: str, ip: str) -> dict[str, list[tuple[str, int, float]]]:
+    """قواعد محدودیت نرخ — یک منبع حقیقت برای همهٔ endpointهای احراز هویت.
+
+    هر قاعده: (کلید، حداکثر تعداد، طول پنجره به ثانیه)
+    """
+    return {
+        "otp_request": [
+            (f"otp-min:{phone}", settings.otp_request_per_min, 60),
+            (f"otp-hour:{phone}", settings.otp_request_per_hour, 3600),
+            (f"otp-ip:{ip}", 10, 3600),
+        ],
+        "otp_verify": [
+            (f"otp-verify:{phone}", settings.login_attempts_per_15min, 900),
+            (f"otp-verify-ip:{ip}", 30, 900),
+        ],
+        "login": [
+            (f"login:{phone}", settings.login_attempts_per_15min, 900),
+            (f"login-ip:{ip}", 20, 900),
+        ],
+        "refresh": [
+            (f"refresh-ip:{ip}", 60, 900),
+        ],
+    }
+
+
+def _apply_rate_limits(
+    db: Session,
+    scope: str,
+    *,
+    phone: str = "",
+    ip: str = "unknown",
+) -> None:
+    """اعمال همهٔ محدودیت‌های مربوط به یک scope.
+
+    در صورت عبور از حد، 429 با پیام فارسیِ شاملِ زمان انتظار برمی‌گرداند و
+    رخداد در لاگ ممیزی ثبت می‌شود (بدون دادهٔ شخصی اضافه).
+    """
+    for key, limit, window_sec in _rate_limit_rules(phone, ip)[scope]:
+        if not limiter.hit(key, limit, window_sec):
+            minutes = max(1, int(window_sec) // 60)
+            # نوعِ قاعده (نه خود کلید) ثبت می‌شود تا شماره/IP وارد لاگ نشود
+            log_audit(db, "ratelimit.hit", meta={"scope": scope, "rule": key.split(":")[0]})
+            db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"تلاش زیاد؛ حدود {minutes} دقیقه بعد دوباره تلاش کن",
+            )
+
+
 @router.post("/otp/request", response_model=OtpRequestOut)
 def request_otp(body: OtpRequestIn, request: Request, db: Session = Depends(get_db)):
     phone = body.phone
-    limiter.check(f"otp-min:{phone}", settings.otp_request_per_min, 60)
-    limiter.check(f"otp-hour:{phone}", settings.otp_request_per_hour, 3600)
-    limiter.check(f"otp-ip:{_client_ip(request)}", 10, 3600)
+    _apply_rate_limits(db, "otp_request", phone=phone, ip=_client_ip(request))
 
     code = f"{secrets.randbelow(10**6):06d}"
     row = db.scalar(select(OtpCode).where(OtpCode.phone == phone))
@@ -93,7 +140,7 @@ def request_otp(body: OtpRequestIn, request: Request, db: Session = Depends(get_
 @router.post("/otp/verify", response_model=TokensOut)
 def verify_otp(body: OtpVerifyIn, request: Request, db: Session = Depends(get_db)):
     phone = body.phone
-    limiter.check(f"otp-verify:{phone}", settings.login_attempts_per_15min, 900)
+    _apply_rate_limits(db, "otp_verify", phone=phone, ip=_client_ip(request))
 
     row = db.scalar(select(OtpCode).where(OtpCode.phone == phone))
     if row is None:
@@ -118,6 +165,7 @@ def verify_otp(body: OtpVerifyIn, request: Request, db: Session = Depends(get_db
             role=body.role or Role.customer,
         )
         if body.password:
+            # قدرت رمز در لایهٔ schema (PasswordValidator) بررسی شده است
             user.password_hash = hash_password(body.password)
         db.add(user)
         db.flush()
@@ -131,8 +179,7 @@ def verify_otp(body: OtpVerifyIn, request: Request, db: Session = Depends(get_db
 @router.post("/login", response_model=TokensOut)
 def login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
     phone = body.phone
-    limiter.check(f"login:{phone}", settings.login_attempts_per_15min, 900)
-    limiter.check(f"login-ip:{_client_ip(request)}", 20, 900)
+    _apply_rate_limits(db, "login", phone=phone, ip=_client_ip(request))
 
     user = db.scalar(select(User).where(User.phone == phone))
     if user is None or not verify_password(body.password, user.password_hash):
@@ -146,7 +193,8 @@ def login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/refresh", response_model=TokensOut)
-def refresh(body: RefreshIn, db: Session = Depends(get_db)):
+def refresh(body: RefreshIn, request: Request, db: Session = Depends(get_db)):
+    _apply_rate_limits(db, "refresh", ip=_client_ip(request))
     payload = decode_token(body.refresh_token, expected_type="refresh")
     jti = payload.get("jti")
     row = db.scalar(select(RefreshToken).where(RefreshToken.jti == jti))

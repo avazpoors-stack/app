@@ -37,14 +37,14 @@ def test_otp_hourly_cap(client):
 
 
 def test_login_attempt_rate_limited(client):
-    register_otp(client, "09120000019", password="s3cret-pass-123")
+    register_otp(client, "09120000019", password="S3cret-pass-123")
     for _ in range(5):
         r = client.post(
-            "/api/v1/auth/login", json={"phone": "09120000019", "password": "wrong-pass-123"}
+            "/api/v1/auth/login", json={"phone": "09120000019", "password": "Wrong-pass-123"}
         )
         assert r.status_code == 401
     r = client.post(
-        "/api/v1/auth/login", json={"phone": "09120000019", "password": "s3cret-pass-123"}
+        "/api/v1/auth/login", json={"phone": "09120000019", "password": "S3cret-pass-123"}
     )
     assert r.status_code == 429
 

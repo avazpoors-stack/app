@@ -2,17 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/navigation/app_shell.dart';
-import 'core/services/account_repository.dart';
 import 'core/services/app_services.dart';
-import 'core/services/auth_service.dart';
-import 'core/services/content_repository.dart';
-import 'core/services/progress_repository.dart';
-import 'core/services/remote_api.dart';
-import 'core/services/search_service.dart';
-import 'core/services/shop_service.dart';
-import 'core/services/storage.dart';
-import 'core/services/sync_service.dart';
-import 'core/services/venue_service.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -22,20 +12,61 @@ Future<void> main() async {
   runApp(BadaneApp(services: services));
 }
 
-class BadaneApp extends StatelessWidget {
+class BadaneApp extends StatefulWidget {
   const BadaneApp({super.key, this.services});
 
   /// اگر null باشد (مثلاً در تست‌ها)، سرویس‌های حافظه‌ای ساخته می‌شوند.
   final AppServices? services;
 
+  /// سرویس‌های حافظه‌ای — وقتی سرویسی داده نشود (تست‌ها).
+  /// همان مسیر ساختِ `AppServices` (حافظه + API آفلاین) تا دو نسخهٔ موازی نداشته باشیم.
+  @visibleForTesting
+  static AppServices fallbackServices() {
+    try {
+      return AppServices.forTesting();
+    } catch (e) {
+      throw FlutterError(
+        'ساخت سرویس‌های جایگزین شکست خورد: $e\n'
+        'معمولاً یعنی مقداردهی اولیهٔ یکی از وابستگی‌های موردنیاز خطا داده است.',
+      );
+    }
+  }
+
+  @override
+  State<BadaneApp> createState() => _BadaneAppState();
+}
+
+class _BadaneAppState extends State<BadaneApp> {
+  /// سرویس‌های ساخته‌شده توسط خود ویجت (فقط وقتی از بیرون داده نشده باشد).
+  /// یک‌بار ساخته می‌شود تا با هر build دوباره ساخته نشود (نشتی state).
+  AppServices? _owned;
+
+  AppServices get _effective =>
+      widget.services ?? (_owned ??= BadaneApp.fallbackServices());
+
+  @override
+  void didUpdateWidget(covariant BadaneApp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // اگر سرویس از بیرون داده شد، نسخهٔ داخلی دیگر لازم نیست.
+    if (widget.services != null && _owned != null) {
+      _owned!.dispose();
+      _owned = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _owned?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final effective = services ??
-        _fallbackServices();
+    final services = _effective;
     return BadaneScope(
-      services: effective,
+      services: services,
       child: ValueListenableBuilder<ThemeMode>(
-        valueListenable: effective.themeMode,
+        valueListenable: services.themeMode,
         builder: (context, mode, _) => MaterialApp(
           title: 'بدنه',
           debugShowCheckedModeBanner: false,
@@ -52,31 +83,6 @@ class BadaneApp extends StatelessWidget {
           home: const AppShell(),
         ),
       ),
-    );
-  }
-
-  /// سرویس‌های حافظه‌ای — وقتی سرویسی داده نشود (تست‌ها).
-  static AppServices _fallbackServices() {
-    final store = InMemoryStore();
-    final progress = ProgressRepository(store);
-    final account = AccountRepository(store);
-    const api = OfflineRemoteApi();
-    final content = ContentRepository();
-    return AppServices(
-      content: content,
-      progress: progress,
-      account: account,
-      auth: AuthService(repository: account, api: api),
-      sync: SyncService(
-        repository: account,
-        api: api,
-        progress: progress,
-        clock: Clock(),
-      ),
-      search: SearchService(content: content, store: store, api: api),
-      venues: VenueService(store: store, api: api, account: account),
-      shop: ShopService(store: store, api: api, account: account),
-      clock: Clock(),
     );
   }
 }

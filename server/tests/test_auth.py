@@ -59,10 +59,10 @@ def test_otp_expired_code_rejected(client):
 
 
 def test_password_login_and_refresh_rotation(client):
-    tokens = register_otp(client, "09120000004", password="s3cret-pass-123")
+    tokens = register_otp(client, "09120000004", password="S3cret-pass-123")
     # ورود با رمز
     r = client.post(
-        "/api/v1/auth/login", json={"phone": "09120000004", "password": "s3cret-pass-123"}
+        "/api/v1/auth/login", json={"phone": "09120000004", "password": "S3cret-pass-123"}
     )
     assert r.status_code == 200
     login_tokens = r.json()
@@ -91,9 +91,9 @@ def test_logout_revokes_refresh(client):
 
 
 def test_wrong_password_rejected(client):
-    register_otp(client, "09120000006", password="s3cret-pass-123")
+    register_otp(client, "09120000006", password="S3cret-pass-123")
     r = client.post(
-        "/api/v1/auth/login", json={"phone": "09120000006", "password": "wrong-pass-123"}
+        "/api/v1/auth/login", json={"phone": "09120000006", "password": "Wrong-pass-123"}
     )
     assert r.status_code == 401
 

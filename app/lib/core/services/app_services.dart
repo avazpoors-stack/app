@@ -131,6 +131,11 @@ class AppServices {
       _ => 'system',
     });
   }
+
+  /// آزادسازی منابع — فقط صاحبِ سرویس‌ها (کسی که ساخته) صدا می‌زند.
+  void dispose() {
+    themeMode.dispose();
+  }
 }
 
 /// دسترسی به سرویس‌ها از هر جای درخت ویجت.
@@ -143,10 +148,23 @@ class BadaneScope extends InheritedWidget {
 
   final AppServices services;
 
+  /// نسخهٔ امن — اگر `BadaneScope` در درخت نباشد `null` برمی‌گرداند.
+  /// برای کدی که باید بدون سرویس‌ها هم کار کند (مثلاً ویجت‌های مستقل/تست).
+  static AppServices? maybeOf(BuildContext context) {
+    return context.getInheritedWidgetOfExactType<BadaneScope>()?.services;
+  }
+
+  /// نسخهٔ سخت‌گیر — نبودِ `BadaneScope` خطای واضح می‌دهد (به‌جای crash مبهم).
   static AppServices of(BuildContext context) {
     final scope = context.getInheritedWidgetOfExactType<BadaneScope>();
-    assert(scope != null, 'BadaneScope not found in widget tree');
-    return scope!.services;
+    if (scope == null) {
+      throw FlutterError(
+        'BadaneScope.of() با context‌ای صدا زده شد که BadaneScope ندارد.\n'
+        'مطمئن شو BadaneScope والدِ این ویجت است (معمولاً در BadaneApp ساخته می‌شود). '
+        'اگر نبودِ سرویس‌ها مجاز است، از BadaneScope.maybeOf() استفاده کن.',
+      );
+    }
+    return scope.services;
   }
 
   @override
