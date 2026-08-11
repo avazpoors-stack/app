@@ -1,4 +1,4 @@
-# Badane CI v4 - با لاگ‌گیری برای دیباگ بدون نیاز به دانلود artifact
+# Badane CI v5 - فیکس مسیر لاگ برای issue
 # تاریخ: 2026-08-11
 
 name: Badane CI
@@ -61,34 +61,27 @@ jobs:
         run: |
           flutter --version
           dart --version
-          flutter doctor -v
 
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Analyze Flutter app (with log capture)
+      - name: Analyze Flutter app
         id: analyze
         run: |
           echo "=== flutter analyze ==="
           set +e
-          flutter analyze --verbose 2>&1 | tee analyze.log
+          flutter analyze 2>&1 | tee analyze.log
           EXIT_CODE=${PIPESTATUS[0]}
-          echo "--- analyze.log (first 200 lines) ---"
-          head -n 200 analyze.log || true
-          echo "--- errors only ---"
-          grep -E "error •|warning •|info •" analyze.log | head -n 100 || true
-          echo "EXIT_CODE=$EXIT_CODE"
-          # ذخیره برای step بعدی
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-          # حتی اگر warning داشته باشد، اگر error واقعی بود fail کن
+          echo "--- tail ---"
+          tail -n 200 analyze.log || true
           if grep -q "error •" analyze.log; then
             echo "has_error=true" >> $GITHUB_OUTPUT
-            echo "❌ Real errors found"
-            cat analyze.log
+            echo "❌ Real errors"
             exit 1
           else
             echo "has_error=false" >> $GITHUB_OUTPUT
-            echo "✅ No real errors (only warnings/infos)"
+            echo "✅ No real errors"
           fi
 
       - name: Create issue with analyze log on failure
@@ -97,17 +90,28 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const path = require('path');
             let log = '';
             try {
-              log = fs.readFileSync('analyze.log', 'utf8').substring(0, 60000);
+              // workflow defaults working-directory is app, but github-script runs in root by default
+              // try both paths
+              const possible = ['app/analyze.log', 'analyze.log', './app/analyze.log'];
+              for (const p of possible) {
+                if (fs.existsSync(p)) {
+                  log = fs.readFileSync(p, 'utf8');
+                  log = log.substring(0, 60000);
+                  break;
+                }
+              }
+              if (!log) log = 'analyze.log not found in any of: ' + possible.join(', ');
             } catch(e) {
-              log = 'Could not read analyze.log: ' + e.message;
+              log = 'Error reading log: ' + e.message;
             }
             const body = `### Flutter analyze failed\n\n\`\`\`\n${log}\n\`\`\`\n\n**Branch:** ${context.ref}\n**Commit:** ${context.sha}\n**Run:** ${context.runId}`;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Flutter analyze error on ${context.ref}`,
+              title: `Flutter analyze error on ${context.ref} - ${new Date().toISOString()}`,
               body: body,
               labels: ['ci', 'bug']
             });
@@ -130,3 +134,10 @@ jobs:
         with:
           name: badane-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Upload analyze log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-analyze-log
+          path: app/analyze.log
