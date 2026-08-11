@@ -285,7 +285,7 @@ class _ResultTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.orange.withValues(alpha: 0.12),
+          backgroundColor: AppColors.orange.withOpacity(0.12),
           child: Icon(_icon(result.category), color: AppColors.orange),
         ),
         title: Text(result.title),
@@ -323,7 +323,7 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.orange.withValues(alpha: 0.10),
+        color: AppColors.orange.withOpacity(0.10),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(

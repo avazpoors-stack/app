@@ -193,7 +193,7 @@ class _RestBanner extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.gold.withValues(alpha: 0.15),
+        color: AppColors.gold.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -255,7 +255,7 @@ class _ExerciseCard extends StatelessWidget {
                   Chip(
                     label: const Text('اصلاحی'),
                     visualDensity: VisualDensity.compact,
-                    backgroundColor: AppColors.successGreen.withValues(alpha: 0.15),
+                    backgroundColor: AppColors.successGreen.withOpacity(0.15),
                   ),
               ],
             ),
@@ -287,7 +287,7 @@ class _ExerciseCard extends StatelessWidget {
                         side: BorderSide(
                           color: isLogged(se.exerciseId, i)
                               ? AppColors.successGreen
-                              : AppColors.orange.withValues(alpha: 0.5),
+                              : AppColors.orange.withOpacity(0.5),
                         ),
                       ),
                       child: isLogged(se.exerciseId, i)

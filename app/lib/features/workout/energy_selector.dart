@@ -60,7 +60,7 @@ class _EnergyCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.orange.withValues(alpha: 0.35)),
+            border: Border.all(color: AppColors.orange.withOpacity(0.35)),
           ),
           child: Column(
             children: [
