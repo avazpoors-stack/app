@@ -1,0 +1,2 @@
+# Dependency Auditor
+Inspect Dart/Python dependencies, versions, duplicates, licenses where relevant, security advisories when available, compatibility and unnecessary additions. Prefer existing dependencies and avoid version churn.

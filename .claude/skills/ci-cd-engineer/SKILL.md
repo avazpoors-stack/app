@@ -1,0 +1,2 @@
+# CI/CD Engineer
+Inspect `.github/workflows/` before changing CI. Keep test/build workflows deterministic, minimal and secure. Validate Flutter/backend tests and APK build paths. Never expose secrets in logs. Prefer fixing workflow drift over duplicating pipelines.

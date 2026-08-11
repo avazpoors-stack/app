@@ -1,0 +1,2 @@
+# Content Engine
+Validate embedded JSON/content packs, schema, parsing, localization, exercise/program integrity, missing references and safe fallbacks. Preserve the four pilot programs and content authority. Never invent exercise facts when the source is absent.

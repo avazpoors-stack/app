@@ -1,0 +1,2 @@
+# Product Spec
+Treat `docs/BADANE_MASTERPLAN.md` as the product authority. Cross-check ROADMAP/PLAN/DESIGN_REFERENCE. Preserve Zero-Friction, Offline-First, four-tab flow, tone rules, sponsor/privacy constraints, and explicit user decisions. Resolve conflicts using repository evidence and latest user instruction.

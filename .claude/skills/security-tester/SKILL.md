@@ -1,0 +1,2 @@
+# Security Tester
+Test security-sensitive behavior without exposing secrets. Check auth boundaries, local storage, exports, deep links, permissions, network failures and unsafe logs. Report reproducible findings with severity and evidence.

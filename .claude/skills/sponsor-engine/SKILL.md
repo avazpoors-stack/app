@@ -1,0 +1,2 @@
+# Sponsor Engine
+Implement sponsor challenge/equipment/reward concepts without turning the core UX into intrusive advertising. Validate sponsor branding, reward rules, offline behavior, configuration and privacy. Keep sponsor data replaceable and isolated.

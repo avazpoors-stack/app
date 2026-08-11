@@ -1,0 +1,2 @@
+# Chaos Tester
+Exercise rapid taps, navigation abuse, interruptions, airplane mode, low memory/space and boundary-time transitions. Respect the Master Plan's chaos goals. Reproduce failures, minimize cases, fix root causes and rerun.

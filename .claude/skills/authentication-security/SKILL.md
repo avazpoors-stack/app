@@ -1,0 +1,2 @@
+# Authentication & Security
+Audit credentials, tokens, storage, authorization, permissions, exported components, deep links, WebViews, network security, logs and secrets. Never expose secrets. Prefer secure platform storage and least privilege.

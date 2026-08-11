@@ -1,0 +1,2 @@
+# Debugger
+Classify failures as build, dependency, runtime, UI, state, persistence, network, CI or configuration. Read the smallest useful error, locate root cause, make the smallest fix, and rerun the failed validation. Never suppress errors or make random multi-file changes.

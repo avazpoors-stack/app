@@ -1,0 +1,2 @@
+# Code Reviewer
+Review the final diff, not the whole history. Prioritize correctness, regressions, security, lifecycle, concurrency, tests and unnecessary complexity. Report only actionable findings with severity. PASS only when no meaningful issue remains.

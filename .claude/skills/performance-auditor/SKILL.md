@@ -1,0 +1,2 @@
+# Performance Auditor
+Use evidence, not guesswork. Check startup, frame/rebuild cost, memory, image handling, database queries, network, battery and background work. Fix high-impact issues first and validate after changes.
