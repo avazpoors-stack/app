@@ -5,36 +5,36 @@ Make this repository production-ready without unnecessary rewrites. Stack: Flutt
 
 ## Mandatory session start
 1. Read `MEMORY.md` completely.
-2. Read only the relevant sections of `docs/BADANE_MASTERPLAN.md`, `docs/ROADMAP.md`, `docs/PLAN.md`, and `docs/DESIGN_REFERENCE.md`.
-3. Inspect git status and current branch.
-4. Establish a compact baseline before changing code.
+2. Read only relevant sections of `docs/BADANE_MASTERPLAN.md`, `docs/ROADMAP.md`, `docs/PLAN.md`, and `docs/DESIGN_REFERENCE.md`.
+3. Inspect git status/current branch.
+4. Establish a compact verified baseline.
 
-## Evidence rule
-Every factual project claim must be marked internally as `(user)`, `(verified: source)`, or `[assumed: ...]`. Never invent project state.
+## Token economy
+Targeted search first. Read only relevant files/sections. Never reread unchanged files, dump full logs, or load unrelated skills. Prefer minimal patches and focused tests. Keep project facts in compact internal state; do not repeatedly summarize them.
 
-## Token rule
-Use targeted search before reading files. Never reread unchanged files, dump full logs, or load unrelated skills. Prefer small patches and focused tests. Load only the skills needed for the task.
+## Evidence
+Never invent repository state. Treat facts as verified only after inspecting the source/command that proves them. If blocked, say `NOT VERIFIED`.
 
-## Change rule
-Preserve working architecture and user changes. Prefer the smallest correct change. No speculative rewrites, unnecessary dependencies, or unrelated cleanup.
+## Engineering loop
+inspect → locate → minimal change → compile/test → diagnose → minimal fix → retest → diff review → final audit.
 
-## Validation rule
-Implement → compile → targeted tests → diagnose → minimal fix → retest → broader validation when risk requires it. Never claim fixed/complete without evidence. If verification is impossible, say `NOT VERIFIED` and why.
+## Scope
+Preserve working architecture and user changes. No speculative rewrites, unnecessary dependencies, unrelated cleanup, or destructive resets.
 
-## Quality gates
-Check correctness, offline behavior, lifecycle, state, errors, security, privacy, performance, accessibility, tests, CI, and release implications as relevant.
+## Product safety
+Badane is fitness/wellness software, not a diagnostic tool. Never introduce diagnosis or treatment claims. Protect personal data. Anonymous pilot exports must contain no identity data.
 
-## Project-specific safety
-The product is fitness/wellness, not a medical diagnostic tool. Do not introduce diagnostic claims. Protect user data. Anonymous pilot exports must contain no identity data.
+## Quality
+Check correctness, offline behavior, lifecycle/state, error paths, security/privacy, performance, accessibility, tests, CI, and release implications when relevant.
 
 ## Git
-Never destroy unrelated work. Use a dedicated branch for substantial work. Review the final diff before completion.
+Use a dedicated branch for substantial work. Never destroy unrelated work. Review the final diff before completion.
 
-## Autonomous behavior
-Do not ask unnecessary questions. If the repository contains enough evidence, decide and continue. Ask only for material ambiguity, missing credentials/permissions, destructive actions, or choices that materially change the product.
-
-## Final report
-Changed / Validated / Result / Remaining. Keep it concise.
+## Autonomy
+Do not ask unnecessary questions. Decide from repository evidence when safe. Ask only for material ambiguity, missing credentials/permissions, destructive actions, or choices that materially change the product.
 
 ## Skill routing
-Use the smallest relevant set from `.claude/skills/`. Typical feature flow: project-memory → project-analyzer → product-spec → flutter-architect → flutter-engineer → flutter-tester → code-reviewer. Add backend/security/performance/release skills only when relevant.
+Use the smallest relevant set from `.claude/skills/`. Feature: project-memory → project-analyzer → product-spec → flutter-architect → flutter-engineer → flutter-tester → code-reviewer. Add domain/security/performance/release skills only when relevant.
+
+## Completion
+Never claim complete/fixed without validation evidence. Final report: Changed / Validated / Result / Remaining.
