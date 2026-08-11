@@ -1,0 +1,2 @@
+# Local Database
+Audit local persistence, schema, serialization, migrations, corruption handling, empty state, concurrency and data reset/export. Never silently delete user data. Prefer repository-native storage patterns.
