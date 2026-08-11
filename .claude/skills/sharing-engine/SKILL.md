@@ -1,0 +1,2 @@
+# Sharing Engine
+Validate progress-card generation and Android share flow. Keep cards privacy-safe, deterministic, branded according to design reference, and functional without exposing identity data or secrets.
