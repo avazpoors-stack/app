@@ -1,0 +1,2 @@
+# Integration Tester
+Validate boundaries between Flutter, persistence, APIs and backend. Prefer deterministic fixtures and focused integration tests. Check serialization, failures, retries and offline transitions.
