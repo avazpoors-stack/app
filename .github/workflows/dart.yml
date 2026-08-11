@@ -1,6 +1,6 @@
-# Badane CI v6 - فیکس Node.js 20 deprecated + analyze log
-# - آپدیت اکشن‌ها به نسخه‌های Node 24: checkout@v4 -> v6, setup-python@v5 -> v6, upload-artifact@v4 -> v4 (یا v5), github-script@v7 -> v8
-# - فیکس analyze با --no-fatal-infos --no-fatal-warnings
+# Badane CI v7 - فیکس تست بعد از فیکس analyze
+# - اضافه کردن لاگ برای flutter test
+# - ساخت Issue برای هر دو حالت analyze و test
 # تاریخ: 2026-08-11
 
 name: Badane CI
@@ -25,10 +25,10 @@ jobs:
       run:
         working-directory: server
     steps:
-      - name: Checkout (node24)
+      - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Python (node24)
+      - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -50,7 +50,7 @@ jobs:
       run:
         working-directory: app
     steps:
-      - name: Checkout (node24)
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Setup Flutter
@@ -63,7 +63,6 @@ jobs:
         run: |
           flutter --version
           dart --version
-          flutter doctor -v
 
       - name: Install Flutter dependencies
         run: flutter pub get
@@ -72,21 +71,16 @@ jobs:
         id: analyze
         run: |
           echo "=== flutter analyze (no-fatal-infos/warnings) ==="
-          set +e
           flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee analyze.log
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-          tail -n 150 analyze.log || true
           if grep -q "error •" analyze.log; then
             echo "has_error=true" >> $GITHUB_OUTPUT
-            echo "❌ Real errors found"
+            echo "❌ Real errors"
             exit 1
           else
             echo "has_error=false" >> $GITHUB_OUTPUT
-            echo "✅ No real errors"
           fi
 
-      - name: Create issue with analyze log on failure
+      - name: Create issue on analyze failure
         if: failure() && steps.analyze.outputs.has_error == 'true'
         uses: actions/github-script@v8
         with:
@@ -94,28 +88,53 @@ jobs:
             const fs = require('fs');
             let log = '';
             try {
-              const possible = ['app/analyze.log', 'analyze.log'];
-              for (const p of possible) {
-                if (fs.existsSync(p)) {
-                  log = fs.readFileSync(p, 'utf8').substring(0, 50000);
-                  break;
-                }
+              for (const p of ['app/analyze.log','analyze.log']) {
+                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(0,50000); break; }
               }
-              if (!log) log = 'analyze.log not found';
-            } catch(e) {
-              log = 'Error: ' + e.message;
-            }
-            const body = `### Flutter analyze failed\n\n\`\`\`\n${log}\n\`\`\`\n\nRef: ${context.ref} Sha: ${context.sha} Run: ${context.runId}`;
+            } catch(e){ log = e.message; }
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Analyze error ${new Date().toISOString()}`,
-              body: body,
+              title: `Analyze failed ${new Date().toISOString()}`,
+              body: "```\n"+log+"\n```\nRun: "+context.runId,
               labels: ['ci']
             });
 
-      - name: Run Flutter tests
-        run: flutter test
+      - name: Run Flutter tests (with log)
+        id: test
+        run: |
+          echo "=== flutter test ==="
+          set +e
+          flutter test --verbose 2>&1 | tee test.log
+          EXIT=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
+          tail -n 100 test.log
+          if [ $EXIT -ne 0 ]; then
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            exit $EXIT
+          else
+            echo "has_error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue on test failure
+        if: failure() && steps.test.outputs.has_error == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try {
+              for (const p of ['app/test.log','test.log']) {
+                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(-50000); break; }
+              }
+            } catch(e){ log = e.message; }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Flutter test failed ${new Date().toISOString()}`,
+              body: "```\n"+log+"\n```\nRun: "+context.runId,
+              labels: ['ci']
+            });
 
       - name: Build debug APK
         run: flutter build apk --debug
@@ -124,18 +143,20 @@ jobs:
         run: |
           APK="build/app/outputs/flutter-apk/app-debug.apk"
           SIZE=$(stat -c%s "$APK")
-          echo "APK size: $SIZE bytes"
+          echo "APK size: $SIZE bytes ($((SIZE/1024/1024)) MB)"
           test "$SIZE" -lt 104857600
 
-      - name: Upload APK artifact (node24)
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: badane-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
 
-      - name: Upload analyze log
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-analyze-log
-          path: app/analyze.log
+          name: flutter-logs
+          path: |
+            app/analyze.log
+            app/test.log
