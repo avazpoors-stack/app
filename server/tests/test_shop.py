@@ -1,4 +1,4 @@
-from .conftest import auth_headers, register_otp
+from conftest import auth_headers, register_otp
 
 
 def test_shop_catalog_has_categories_and_filters(client):
