@@ -1,160 +1,47 @@
-# راه‌اندازی CI (تست خودکار + ساخت APK) — راهنمای یک‌باره
+# راه‌اندازی CI و دریافت APK — راهنمای فعلی
 
-## الان مشکل تست‌ها چه بود؟
+## وضعیت واقعی build (2026-08-11)
 
-Workflow قبلی گیت‌هاب از قالب خام Dart آمده بود و در ریشهٔ ریپو دستور `dart pub get` می‌زد؛ در حالی که پروژهٔ Flutter داخل پوشهٔ `app/` است و بک‌اند داخل `server/`. به همین دلیل تست‌های GitHub Actions قبل از رسیدن به تست‌های واقعی fail می‌شدند.
+رفع نسخه‌های ابزار اندروید در commit `e96c47e` انجام شده است:
 
-فایل workflow درست‌شده در همین ریپو این است:
+- Android Gradle Plugin از `8.3.2` به `8.13.0`
+- Gradle Wrapper از `8.7` به `8.14`
+- Java 17 حفظ شده است
 
-` .github/workflows/dart.yml `
+این اصلاح مستقیماً خطای Flutter دربارهٔ حداقل نسخه‌های Gradle `8.14+` و AGP `8.6+` را برطرف می‌کند. اجرای CI شمارهٔ `31511019304` پس از این تغییر، مراحل **analyze**، **test** و **Build debug APK** را با موفقیت رد کرد.
 
-و نسخهٔ لایو (قابل تست روی GitHub) در:
+اما همان اجرای CI در گام قدیمی **Report APK size** شکست خورد؛ این گام یک سقف غیرضروری 100MiB برای APK دیباگ دارد. چون artifact بعد از آن گام قرار گرفته، آپلود APK اجرا نشد. این محدودیت اندازه نباید build آزمایشی را fail کند.
 
-` docs/ci/Badane-CI-Ready.yml `
+## workflow آمادهٔ جایگزینی
 
-این فایل دو کار انجام می‌دهد:
+منبع درست و به‌روز workflow در این فایل قرار دارد:
 
-1. **Backend:** نصب وابستگی‌های Python و اجرای `pytest -q` در پوشهٔ `server/` (32 تست)
-2. **Flutter:** اجرای `flutter pub get`، `flutter analyze`، `flutter test` و ساخت APK دیباگ در پوشهٔ `app/`
+[`docs/ci/Badane-CI-Ready.yml`](ci/Badane-CI-Ready.yml)
 
-## اگر تغییر workflow از سمت ربات در GitHub ذخیره نشد (403)
+ویژگی‌های آن:
 
-GitHub به GitHub Apps بدون دسترسی `workflows` اجازهٔ تغییر فایل‌های داخل `.github/workflows/` را نمی‌دهد. خطاها:
+1. **Java 17 (Temurin)** را صریحاً نصب و cache گرادل را فعال می‌کند.
+2. `flutter analyze` و تست Flutter را fail-fast اجرا می‌کند؛ خطای تست پنهان نمی‌شود.
+3. یک APK عمومی دیباگ، یعنی `app-debug.apk`، می‌سازد؛ از `--split-per-abi` استفاده نمی‌کند تا فایل قابل نصب واحد داشته باشیم.
+4. وجود APK را بررسی می‌کند، اما سقف مصنوعی اندازه ندارد.
+5. APK موفق را با نام `badane-debug-apk` برای ۱۴ روز نگه می‌دارد.
+6. در هر حالت، `test.log` و `build.log` را با نام `flutter-build-logs` برای ۷ روز آپلود می‌کند.
 
-- `Resource not accessible by integration` (API)
-- `refusing to allow a GitHub App to create or update workflow ... without workflows permission` (git push)
+## اعمال دستی در GitHub (نیاز به یک‌بار انجام)
 
-**راه‌حل 1 — دستی در GitHub (یک‌بار، پیشنهادی):**
+ربات Arena دسترسی `workflows` برای نوشتن فایل‌های `.github/workflows/**` ندارد؛ به همین دلیل این یک مرحله باید با حسابی که دسترسی ویرایش repository دارد انجام شود.
 
-1. در مرورگر برو به:
-   `https://github.com/avazpoors-stack/app/blob/main/.github/workflows/dart.yml`
-2. روی **Edit** (یا ✏️) بزن.
-3. محتوای فایل `https://github.com/avazpoors-stack/app/blob/main/docs/ci/Badane-CI-Ready.yml` را کپی کن (دکمه Raw بزن).
-4. جایگزین کن و روی **Commit changes** → Commit directly to main.
+1. در GitHub، برنچی را باز کنید که می‌خواهید CI روی آن اجرا شود.
+2. فایل `.github/workflows/dart.yml` را باز و روی **Edit** کلیک کنید.
+3. تمام محتوای آن را با محتوای کامل [`docs/ci/Badane-CI-Ready.yml`](ci/Badane-CI-Ready.yml) جایگزین کنید.
+4. تغییر را در همان برنچ commit کنید.
+5. در تب **Actions**، اجرای جدید `Badane CI` را باز کنید.
+6. پس از سبزشدن job Flutter، در بخش **Artifacts** فایل `badane-debug-apk` را دانلود کنید. Zip شامل `app-debug.apk` است.
 
-بعد از این، هر push به main و arena/** باید دو جاب سبز داشته باشد.
+> این APK از نوع debug است و برای تست روی گوشی مناسب است، نه انتشار عمومی. برای انتشار نهایی باید build release با کلید امضای release انجام شود.
 
-**راه‌حل 2 — نسخهٔ لایو روی GitHub برای تست خودت (پیاده شده در 2026-08-11):**
+## اعتبارسنجی‌های انجام‌شده
 
-چون push workflow مسدود است، یک کپی از workflow در `docs/ci/Badane-CI-Ready.yml` قرار گرفت که روی main پوش می‌شود و بدون نیاز به permission قابل دیدن است:
-
-- لینک: `https://github.com/avazpoors-stack/app/blob/main/docs/ci/Badane-CI-Ready.yml`
-
-همچنین ابزارهای تست محلی بدون نیاز به Flutter SDK:
-
-- `tools/badane_ci_validator.py` → اعتبارسنجی YAML + pytest واقعی (32 passed) + بررسی ساختار Flutter + چک عدم گم‌شدن فایل‌ها
-- `scripts/ci_live_test.sh` → اسکریپت bash که همان مراحل را شبیه‌سازی می‌کند
-- `docs/ci/LIVE_CI_REPORT.md` → گزارش کامل این جلسه
-
-این‌ها همان "خارج از باکس فکر کن" است — حتی اگر GitHub کلا بلاک باشد، CI را محلی تست کردیم.
-
-**تست محلی در این جلسه (2026-08-11):**
-
-```
-................................
-32 passed, 1 warning in 1.82s
-✅ Workflow YAML is valid
-✅ Flutter structure OK (13 service, 13 test files)
-✅ No files lost
-```
-
-## فایل صحیح workflow (Badane CI)
-
-```yaml
-name: Badane CI
-
-on:
-  push:
-    branches:
-      - main
-      - "arena/**"
-  pull_request:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  backend:
-    name: Backend (pytest)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: server/requirements.txt
-
-      - name: Install backend dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run backend tests
-        run: pytest -q
-
-  flutter:
-    name: Flutter (analyze + test + debug APK)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Show Flutter version
-        run: flutter --version
-
-      - name: Install Flutter dependencies
-        run: flutter pub get
-
-      - name: Analyze Flutter app
-        run: flutter analyze
-
-      - name: Run Flutter tests
-        run: flutter test
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Report APK size
-        run: |
-          APK="build/app/outputs/flutter-apk/app-debug.apk"
-          SIZE=$(stat -c%s "$APK")
-          echo "APK size: $SIZE bytes ($((SIZE / 1024 / 1024)) MB)"
-          test "$SIZE" -lt 104857600
-
-      - name: Upload debug APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: badane-debug-apk
-          path: app/build/app/outputs/flutter-apk/app-debug.apk
-```
-
-## نتیجهٔ مورد انتظار
-
-بعد از اجرای موفق CI:
-
-- بخش **Backend (pytest)** باید سبز شود (32 passed).
-- بخش **Flutter (analyze + test + debug APK)** باید سبز شود.
-- از قسمت **Artifacts** می‌توانی فایل `badane-debug-apk` را دانلود کنی.
-
-## تاریخچهٔ branchها
-
-- `arena/019fec12-app` : اولین پیاده‌سازی P3/P4 + تلاش برای fix workflow (403)
-- `arena/019fef96-app` : مرج شد به main (PR #6) — شامل همهٔ فایل‌ها ولی workflow قدیمی
-- `arena/019fefa5-app` (این جلسه 2026-08-11): مرتب‌سازی `.gitignore` + live version در `docs/ci/` + validator + گزارش
+- پیکربندی Android به‌صورت ایستا بررسی شد: AGP `8.13.0`، Gradle `8.14` و targetهای Java/Kotlin `17`.
+- تست‌های backend در این محیط: **63 passed, 1 warning**.
+- ساخت Android فقط در GitHub Actions اجرا می‌شود؛ این محیط محلی Flutter، Java و Android SDK ندارد.

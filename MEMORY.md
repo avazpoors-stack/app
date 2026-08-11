@@ -48,6 +48,7 @@
 | تصمیم | مقدار | وضعیت |
 |---|---|---|
 | سازوکار حافظهٔ دائمی | MEMORY.md + docs/ + commit/push به گیت‌هاب | گرفته شد 2026-08-09 |
+| خروجی APK در CI | Java Temurin 17؛ یک APK دیباگ عمومی `app-debug.apk` (بدون split ABI)؛ شکست analyze/test باید CI را fail کند؛ APK موفق ۱۴ روز و لاگ‌ها ۷ روز نگه‌داری شوند | انتخاب کاربر 2026-08-11 |
 | سند مرجع | docs/BADANE_MASTERPLAN.md (متن کامل مسترپلن کاربر) | ذخیره شد 2026-08-09 |
 | مرجع طراحی | docs/DESIGN_REFERENCE.md + فایل‌های تصویری بام در docs/design-reference/ | ذخیره شد 2026-08-09 |
 | چشم‌انداز گسترده | docs/PRODUCT_VISION.md (۹ ویژگی جدید) | ذخیره شد 2026-08-09 |
@@ -122,3 +123,4 @@
 | 2026-08-11 | تست out-of-the-box بدون نیاز به کاربر: `server/.venv/bin/python tools/badane_ci_validator.py` → **32 passed, 1 warning** + ✅ Workflow YAML valid + ✅ Flutter structure (13 service, 13 test files) + ✅ No files lost — (verified: اجرای محلی) | ✅ |
 | 2026-08-11 | فیکس Gradle 8.7: خط `distributionUrl` در `app/android/gradle/wrapper/gradle-wrapper.properties` به `gradle-8.7-all.zip` تغییر یافت برای رفع خطای `flutter build apk --debug` در CI — (user / verified) | ✅ |
 | 2026-08-11 | برنچ کاری جدید: `arena/019ff124-app` — اضافه شدن اسکریپت‌های اجرایی `gradlew` و `gradlew.bat` به `app/android/` و تنظیم `JavaVersion.VERSION_17` در `app/android/app/build.gradle` جهت بیلد کامل APK در CI بدون نقص ابزار | ✅ |
+| 2026-08-11 | لاگ واقعی CI علت build APK را روشن کرد: Flutter، Gradle 8.7 و AGP 8.3.2 را پایین‌تر از حداقل‌های خود دانست. راه‌حل در کد: Gradle wrapper به 8.14 و AGP به 8.13.0 ارتقا یافت؛ Java 17 حفظ شد. اجرای CI 31511019304 بعد از fix، analyze/test/build APK را پاس کرد؛ فقط گام قدیمی Report APK size شکست خورد و artifact را skip کرد. workflow آمادهٔ v10 در docs/ci سقف اندازه را حذف می‌کند، ولی اعمال `.github/workflows` دستی لازم است. | ✅ build / ⏳ workflow دستی |
