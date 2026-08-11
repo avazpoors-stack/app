@@ -4,12 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:badane/main.dart';
 
 void main() {
-  testWidgets('پوستهٔ اصلی چهار تب ناوبری را نشان می‌دهد', (tester) async {
+  testWidgets('پوستهٔ اصلی پنج تب ناوبری را نشان می‌دهد', (tester) async {
     await tester.pumpWidget(const BadaneApp());
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('خانه'), findsOneWidget);
     expect(find.text('برنامه'), findsOneWidget);
+    expect(find.text('فروشگاه'), findsOneWidget);
     expect(find.text('پیشرفت'), findsOneWidget);
     expect(find.text('پروفایل'), findsOneWidget);
   });

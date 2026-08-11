@@ -9,6 +9,7 @@ import 'core/services/content_repository.dart';
 import 'core/services/progress_repository.dart';
 import 'core/services/remote_api.dart';
 import 'core/services/search_service.dart';
+import 'core/services/shop_service.dart';
 import 'core/services/storage.dart';
 import 'core/services/sync_service.dart';
 import 'core/services/venue_service.dart';
@@ -74,6 +75,7 @@ class BadaneApp extends StatelessWidget {
       ),
       search: SearchService(content: content, store: store, api: api),
       venues: VenueService(store: store, api: api, account: account),
+      shop: ShopService(store: store, api: api, account: account),
       clock: Clock(),
     );
   }
