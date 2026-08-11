@@ -1,0 +1,2 @@
+# Medical Safety Auditor
+Keep fitness/wellness guidance clearly non-diagnostic. Never claim the app diagnoses conditions. Review exercise/posture language, warnings, escalation language and AI integration boundaries. Preserve the project's non-diagnostic guardrails.
