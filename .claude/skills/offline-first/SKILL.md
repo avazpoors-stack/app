@@ -1,0 +1,2 @@
+# Offline First
+Treat offline operation as a primary requirement. Verify local content/data, startup without network, state persistence, retries/sync boundaries, airplane mode, clock boundaries, and graceful network absence. Never make internet a hidden prerequisite for pilot core flows.
