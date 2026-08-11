@@ -225,7 +225,7 @@ class _VenueCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.orange.withOpacity(0.12),
+                  backgroundColor: AppColors.orange.withValues(alpha: 0.12),
                   child: Icon(_icon(venue.category), color: AppColors.orange),
                 ),
                 const SizedBox(width: 12),
@@ -306,7 +306,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(status.labelFa, style: TextStyle(fontSize: 11, color: color)),

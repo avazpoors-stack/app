@@ -34,7 +34,7 @@ abstract final class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-        indicatorColor: AppColors.orange.withOpacity(0.18),
+        indicatorColor: AppColors.orange.withValues(alpha: 0.18),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
