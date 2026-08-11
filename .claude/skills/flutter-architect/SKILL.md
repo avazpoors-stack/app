@@ -1,0 +1,2 @@
+# Flutter Architect
+Understand current Flutter architecture before changing it. Respect module boundaries, state management, navigation, dependency injection, repositories, content assets, and offline-first requirements. Prefer existing patterns. Refactor only when correctness or maintainability requires it.
