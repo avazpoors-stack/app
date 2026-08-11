@@ -1,6 +1,6 @@
-# Badane CI - نسخه درست شده برای جایگزینی .github/workflows/dart.yml
-# نسخه دوم - با withOpacity fix + verbose analyze برای دیباگ
-# تاریخ: 2026-08-11 - بعد از فیکس اولیه
+# Badane CI - نسخه 3 - فیکس analyze که روی warning هم fail می‌کرد
+# بر اساس تحقیق: flutter analyze حتی روی info هم exit 1 می‌دهد مگر با --no-fatal-infos --no-fatal-warnings
+# تاریخ: 2026-08-11
 
 name: Badane CI
 
@@ -61,27 +61,22 @@ jobs:
         run: |
           flutter --version
           dart --version
-          flutter doctor -v
 
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Analyze Flutter app (verbose)
+      - name: Analyze Flutter app
         run: |
-          echo "=== flutter analyze --verbose ==="
-          flutter analyze --verbose 2>&1 | tee analyze.log || true
-          echo ""
-          echo "=== analyze.log ==="
-          cat analyze.log || true
-          echo ""
-          echo "=== checking for errors ==="
-          # اگر خطایی شامل 'error' باشد، فیل کنیم
-          if grep -i "error •" analyze.log; then
-            echo "❌ Found analyze errors"
-            cat analyze.log
+          echo "Running flutter analyze with no-fatal flags (fixes info/warning failure)"
+          flutter analyze --no-fatal-infos --no-fatal-warnings --verbose 2>&1 | tee analyze.log || true
+          echo "--- analyze.log tail ---"
+          tail -n 100 analyze.log || true
+          # فقط اگر error واقعی باشد فیل کن، نه info/warning
+          if grep -E "error •" analyze.log; then
+            echo "❌ Found real errors in analyze"
             exit 1
           else
-            echo "✅ No blocking errors found (warnings may exist)"
+            echo "✅ Analyze passed (infos/warnings allowed)"
           fi
 
       - name: Run Flutter tests
