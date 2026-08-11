@@ -7,8 +7,8 @@
 ## پروژه در یک نگاه
 - محصول: اپ اندروید «بدنه (Badane)» — فیتنس آفلاین-اول (Offline-First) با گیمیفیکیشن، برای جذب حامی مالی — (user, 2026-08-09)
 - نسخه: Pilot 0.9 (Sponsor-Ready)؛ استک: **Flutter** — (verified: docs/BADANE_MASTERPLAN.md بخش ۸)
-- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019ff117-app (جلسه‌های قبل: arena/019ff110-app، arena/019fefa5-app، arena/019fec12-app، arena/019febc8-app، arena/019fe750-app) — (verified: git branch)
-- وضعیت: فیکس Gradle 8.7 (ارتقا gradle-wrapper به gradle-8.7-all.zip جهت رفع خطای بیلد APK در CI) اعمال شد؛ بک‌اند 32 تست سبز؛ آماده پوش و اجرای CI — (verified: 2026-08-11)
+- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019ff124-app (جلسه‌های قبل: arena/019ff117-app، arena/019ff110-app، arena/019fefa5-app، arena/019fec12-app، arena/019febc8-app، arena/019fe750-app) — (verified: git branch)
+- وضعیت: اضافه شدن اسکریپت‌های کامل Gradle Wrapper (شامل `gradlew` قابل اجرا و `gradlew.bat`) و هماهنگ‌سازی Java 17 در `app/android/app/build.gradle` جهت بیلد کامل APK در CI — (verified: 2026-08-11)
 
 ## قواعد شواهد (برای همهٔ جلسات)
 هر ادعای واقعی باید یکی از این برچسب‌ها را داشته باشد:
@@ -121,3 +121,4 @@
 | 2026-08-11 | راه‌حل لایو روی GitHub: نسخهٔ درست workflow در `docs/ci/Badane-CI-Ready.yml` قرار گرفت (خارج از .github/workflows، push موفق)؛ ابزار تست `tools/badane_ci_validator.py` (YAML+pytest+Flutter structure+no-lost-files) + `scripts/ci_live_test.sh` + گزارش `docs/ci/LIVE_CI_REPORT.md` ساخته شد — (verified: ls, push) | ✅ |
 | 2026-08-11 | تست out-of-the-box بدون نیاز به کاربر: `server/.venv/bin/python tools/badane_ci_validator.py` → **32 passed, 1 warning** + ✅ Workflow YAML valid + ✅ Flutter structure (13 service, 13 test files) + ✅ No files lost — (verified: اجرای محلی) | ✅ |
 | 2026-08-11 | فیکس Gradle 8.7: خط `distributionUrl` در `app/android/gradle/wrapper/gradle-wrapper.properties` به `gradle-8.7-all.zip` تغییر یافت برای رفع خطای `flutter build apk --debug` در CI — (user / verified) | ✅ |
+| 2026-08-11 | برنچ کاری جدید: `arena/019ff124-app` — اضافه شدن اسکریپت‌های اجرایی `gradlew` و `gradlew.bat` به `app/android/` و تنظیم `JavaVersion.VERSION_17` در `app/android/app/build.gradle` جهت بیلد کامل APK در CI بدون نقص ابزار | ✅ |
