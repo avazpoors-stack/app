@@ -7,8 +7,8 @@
 ## پروژه در یک نگاه
 - محصول: اپ اندروید «بدنه (Badane)» — فیتنس آفلاین-اول (Offline-First) با گیمیفیکیشن، برای جذب حامی مالی — (user, 2026-08-09)
 - نسخه: Pilot 0.9 (Sponsor-Ready)؛ استک: **Flutter** — (verified: docs/BADANE_MASTERPLAN.md بخش ۸)
-- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019fefa5-app (جلسه‌های قبل: arena/019fec12-app، arena/019febc8-app، arena/019fe750-app) — (verified: git branch)
-- وضعیت: کدنویسی فعال — P0/P1/P2/P3/P4 کامل؛ بک‌اند 32 تست سبز (verified: pytest)؛ فایل‌ها مرتب‌سازی شدند (.gitignore فیکس)، نسخهٔ لایو CI در docs/ci/ قرار گرفت، ابزار تست out-of-the-box ساخته شد؛ workflow روی main هنوز قدیمی است و نیاز به اعمال دستی یک‌باره دارد — (verified: 2026-08-11)
+- ریپو: github.com/avazpoors-stack/app — برنچ کاری فعلی: arena/019ff117-app (جلسه‌های قبل: arena/019ff110-app، arena/019fefa5-app، arena/019fec12-app، arena/019febc8-app، arena/019fe750-app) — (verified: git branch)
+- وضعیت: فیکس Gradle 8.7 (ارتقا gradle-wrapper به gradle-8.7-all.zip جهت رفع خطای بیلد APK در CI) اعمال شد؛ بک‌اند 32 تست سبز؛ آماده پوش و اجرای CI — (verified: 2026-08-11)
 
 ## قواعد شواهد (برای همهٔ جلسات)
 هر ادعای واقعی باید یکی از این برچسب‌ها را داشته باشد:
@@ -120,4 +120,4 @@
 | 2026-08-11 | تلاش برای جایگزینی دستی workflow روی GitHub: `gh api PUT .../contents/.github/workflows/dart.yml` → 403 Resource not accessible؛ `git push` با workflow → remote rejected (workflows permission)؛ low-level git API create tree → 403 — (verified: اجرای دستورات) | ❌ مسدود به خاطر permission (همان محدودیت قبلی) |
 | 2026-08-11 | راه‌حل لایو روی GitHub: نسخهٔ درست workflow در `docs/ci/Badane-CI-Ready.yml` قرار گرفت (خارج از .github/workflows، push موفق)؛ ابزار تست `tools/badane_ci_validator.py` (YAML+pytest+Flutter structure+no-lost-files) + `scripts/ci_live_test.sh` + گزارش `docs/ci/LIVE_CI_REPORT.md` ساخته شد — (verified: ls, push) | ✅ |
 | 2026-08-11 | تست out-of-the-box بدون نیاز به کاربر: `server/.venv/bin/python tools/badane_ci_validator.py` → **32 passed, 1 warning** + ✅ Workflow YAML valid + ✅ Flutter structure (13 service, 13 test files) + ✅ No files lost — (verified: اجرای محلی) | ✅ |
-| 2026-08-11 | `docs/CI_SETUP.md` به‌روز شد: توضیح 403 + راه‌حل دستی یک‌باره + live version + گزارش تست محلی — (verified: cat) | ✅ |
+| 2026-08-11 | فیکس Gradle 8.7: خط `distributionUrl` در `app/android/gradle/wrapper/gradle-wrapper.properties` به `gradle-8.7-all.zip` تغییر یافت برای رفع خطای `flutter build apk --debug` در CI — (user / verified) | ✅ |
