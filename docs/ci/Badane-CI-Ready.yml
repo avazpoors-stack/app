@@ -1,6 +1,4 @@
-# Badane CI v7 - فیکس تست بعد از فیکس analyze
-# - اضافه کردن لاگ برای flutter test
-# - ساخت Issue برای هر دو حالت analyze و test
+# Badane CI v8 - فیکس build APK بعد از فیکس تست
 # تاریخ: 2026-08-11
 
 name: Badane CI
@@ -70,11 +68,9 @@ jobs:
       - name: Analyze Flutter app
         id: analyze
         run: |
-          echo "=== flutter analyze (no-fatal-infos/warnings) ==="
           flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee analyze.log
           if grep -q "error •" analyze.log; then
             echo "has_error=true" >> $GITHUB_OUTPUT
-            echo "❌ Real errors"
             exit 1
           else
             echo "has_error=false" >> $GITHUB_OUTPUT
@@ -86,35 +82,17 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            let log = '';
-            try {
-              for (const p of ['app/analyze.log','analyze.log']) {
-                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(0,50000); break; }
-              }
-            } catch(e){ log = e.message; }
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Analyze failed ${new Date().toISOString()}`,
-              body: "```\n"+log+"\n```\nRun: "+context.runId,
-              labels: ['ci']
-            });
+            let log=''; for (const p of ['app/analyze.log','analyze.log']) if (fs.existsSync(p)) {log=fs.readFileSync(p,'utf8').slice(0,50000); break;}
+            await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title: `Analyze failed ${new Date().toISOString()}`, body: "```\n"+log+"\n```\nRun: "+context.runId, labels: ['ci']});
 
-      - name: Run Flutter tests (with log)
+      - name: Run Flutter tests
         id: test
         run: |
-          echo "=== flutter test ==="
           set +e
           flutter test --verbose 2>&1 | tee test.log
           EXIT=${PIPESTATUS[0]}
           echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
-          tail -n 100 test.log
-          if [ $EXIT -ne 0 ]; then
-            echo "has_error=true" >> $GITHUB_OUTPUT
-            exit $EXIT
-          else
-            echo "has_error=false" >> $GITHUB_OUTPUT
-          fi
+          if [ $EXIT -ne 0 ]; then echo "has_error=true" >> $GITHUB_OUTPUT; exit $EXIT; else echo "has_error=false" >> $GITHUB_OUTPUT; fi
 
       - name: Create issue on test failure
         if: failure() && steps.test.outputs.has_error == 'true'
@@ -122,22 +100,27 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            let log = '';
-            try {
-              for (const p of ['app/test.log','test.log']) {
-                if (fs.existsSync(p)) { log = fs.readFileSync(p,'utf8').slice(-50000); break; }
-              }
-            } catch(e){ log = e.message; }
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Flutter test failed ${new Date().toISOString()}`,
-              body: "```\n"+log+"\n```\nRun: "+context.runId,
-              labels: ['ci']
-            });
+            let log=''; for (const p of ['app/test.log','test.log']) if (fs.existsSync(p)) {log=fs.readFileSync(p,'utf8').slice(-50000); break;}
+            await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title: `Test failed ${new Date().toISOString()}`, body: "```\n"+log+"\n```\nRun: "+context.runId, labels: ['ci']});
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        id: build
+        run: |
+          set +e
+          flutter build apk --debug --verbose 2>&1 | tee build.log
+          EXIT=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
+          tail -n 200 build.log
+          if [ $EXIT -ne 0 ]; then echo "has_error=true" >> $GITHUB_OUTPUT; exit $EXIT; else echo "has_error=false" >> $GITHUB_OUTPUT; fi
+
+      - name: Create issue on build failure
+        if: failure() && steps.build.outputs.has_error == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            let log=''; for (const p of ['app/build.log','build.log']) if (fs.existsSync(p)) {log=fs.readFileSync(p,'utf8').slice(-50000); break;}
+            await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title: `Build APK failed ${new Date().toISOString()}`, body: "```\n"+log+"\n```\nRun: "+context.runId, labels: ['ci']});
 
       - name: Report APK size
         run: |
@@ -160,3 +143,4 @@ jobs:
           path: |
             app/analyze.log
             app/test.log
+            app/build.log
