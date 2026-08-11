@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Settings
-from .db import init_db
+from .db import configure_engine, init_db
 from . import auth, sync, search, venues, shop
 
 APP_VERSION = "0.4.0"
@@ -19,8 +19,12 @@ settings = Settings()
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # در توسعه جدول‌ها ساخته می‌شوند؛ در production مهاجرت با Alembic (A7)
-    init_db()
+    # توسعه/تست: جدول‌ها ساخته می‌شوند.
+    # تولید: فقط اتصال؛ schema باید از قبل با `alembic upgrade head` مهاجرت شده باشد.
+    if settings.is_production:
+        configure_engine()
+    else:
+        init_db()
     yield
 
 

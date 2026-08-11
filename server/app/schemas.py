@@ -9,6 +9,74 @@ from .models import Role, VenueCategory, VenueStatus
 
 PHONE_PATTERN = r"^09\d{9}$"  # شمارهٔ موبایل ایران
 
+PASSWORD_MIN_LENGTH = 8
+PASSWORD_MAX_LENGTH = 128
+
+# رمزهای خیلی رایج — حتی اگر قواعد را رد کنند، پذیرفته نمی‌شوند
+_COMMON_PASSWORDS = frozenset(
+    {
+        "password1",
+        "password123",
+        "passw0rd",
+        "qwerty123",
+        "iloveyou1",
+        "welcome1",
+        "abcd1234",
+        "admin123",
+        "12345678",
+        "123456789",
+    }
+)
+
+PASSWORD_ERROR = (
+    "رمز عبور باید حداقل ۸ کاراکتر باشد و شامل حرف بزرگ انگلیسی و عدد باشد"
+)
+
+
+class PasswordValidator:
+    """قواعد قدرت رمز عبور — یک‌جا، تا سرور و تست‌ها یک منبع حقیقت داشته باشند."""
+
+    MIN_LENGTH = PASSWORD_MIN_LENGTH
+    MAX_LENGTH = PASSWORD_MAX_LENGTH
+    REQUIRE_DIGIT = True
+    REQUIRE_UPPERCASE = True
+    REQUIRE_LOWERCASE = True
+    REQUIRE_SPECIAL = False
+
+    @classmethod
+    def problems(cls, password: str) -> list[str]:
+        """فهرست ایرادهای رمز — خالی یعنی معتبر."""
+        issues: list[str] = []
+        if len(password) < cls.MIN_LENGTH:
+            issues.append(f"حداقل {cls.MIN_LENGTH} کاراکتر")
+        if len(password) > cls.MAX_LENGTH:
+            issues.append(f"حداکثر {cls.MAX_LENGTH} کاراکتر")
+        if cls.REQUIRE_DIGIT and not any(c.isdigit() for c in password):
+            issues.append("حداقل یک عدد")
+        if cls.REQUIRE_UPPERCASE and not any(c.isupper() for c in password):
+            issues.append("حداقل یک حرف بزرگ")
+        if cls.REQUIRE_LOWERCASE and not any(c.islower() for c in password):
+            issues.append("حداقل یک حرف کوچک")
+        if cls.REQUIRE_SPECIAL and password.isalnum():
+            issues.append("حداقل یک نویسهٔ ویژه")
+        if password.lower() in _COMMON_PASSWORDS:
+            issues.append("این رمز خیلی رایج است")
+        return issues
+
+    @classmethod
+    def validate(cls, password: str) -> bool:
+        return not cls.problems(password)
+
+
+def _check_password(value: Optional[str]) -> Optional[str]:
+    """اعتبارسنجی مشترک رمز — پیام خطای فارسی و شفاف."""
+    if value is None:
+        return value
+    issues = PasswordValidator.problems(value)
+    if issues:
+        raise ValueError(f"{PASSWORD_ERROR} ({'، '.join(issues)})")
+    return value
+
 
 class OtpRequestIn(BaseModel):
     phone: str = Field(pattern=PHONE_PATTERN)
@@ -27,12 +95,36 @@ class OtpVerifyIn(BaseModel):
     code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
     name: Optional[str] = Field(default=None, max_length=64)
     role: Optional[Role] = None
-    password: Optional[str] = Field(default=None, min_length=8, max_length=128)
+    password: Optional[str] = Field(
+        default=None, min_length=PASSWORD_MIN_LENGTH, max_length=PASSWORD_MAX_LENGTH
+    )
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: Optional[str]) -> Optional[str]:
+        return _check_password(v)
+
+
+class PasswordSetIn(BaseModel):
+    """تعیین/تغییر رمز عبور — همان قواعد قدرت رمز."""
+
+    password: str = Field(min_length=PASSWORD_MIN_LENGTH, max_length=PASSWORD_MAX_LENGTH)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        return _check_password(v)  # type: ignore[return-value]
 
 
 class LoginIn(BaseModel):
+    """ورود — عمداً قواعد قدرت رمز اینجا اعمال نمی‌شود.
+
+    اعمال قواعد در ورود، هم سیاست رمز را به مهاجم لو می‌دهد و هم
+    کاربران قدیمی با رمز ضعیف را قفل می‌کند؛ ضعف رمز فقط هنگام «تعیین» رد می‌شود.
+    """
+
     phone: str = Field(pattern=PHONE_PATTERN)
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(min_length=1, max_length=PASSWORD_MAX_LENGTH)
 
 
 class RefreshIn(BaseModel):

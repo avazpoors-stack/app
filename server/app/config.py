@@ -33,3 +33,8 @@ class Settings:
         self.cors_origins = [
             o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()
         ]
+
+    @property
+    def is_production(self) -> bool:
+        """تولید = هر چیزی جز development/test (پیش‌فرضِ محافظه‌کارانه نیست؛ صریح است)."""
+        return self.env == "production"
