@@ -435,7 +435,7 @@ class _AuthSheetState extends State<_AuthSheet> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.orange.withValues(alpha: 0.12),
+                      color: AppColors.orange.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

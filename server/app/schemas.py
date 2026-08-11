@@ -214,3 +214,31 @@ class VenueOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     approved_at: Optional[datetime]
+
+
+# ================= P5: فروشگاه =================
+class ProductCreateIn(BaseModel):
+    name: str = Field(min_length=2, max_length=120)
+    category: str = Field(min_length=2, max_length=24)
+    brand: str = Field(default="", max_length=64)
+    price_toman: int = Field(ge=0, le=2_000_000_000)
+    stock: int = Field(ge=0, le=1_000_000)
+
+class ProductOut(ProductCreateIn):
+    id: str
+    seller_id: int
+    approved: bool
+
+class OrderItemIn(BaseModel):
+    product_id: str = Field(min_length=2, max_length=80)
+    quantity: int = Field(ge=1, le=50)
+    price_toman: int = Field(ge=0, le=2_000_000_000)
+
+class OrderIn(BaseModel):
+    items: list[OrderItemIn] = Field(min_length=1, max_length=50)
+
+class OrderOut(BaseModel):
+    order_id: str
+    status: str
+    total_toman: int
+    payment_url: Optional[str]
