@@ -281,7 +281,7 @@ class _VenueCard extends StatelessWidget {
   IconData _icon(VenueCategory category) => switch (category) {
         VenueCategory.pool => Icons.pool,
         VenueCategory.gym => Icons.fitness_center,
-        VenueCategory.martialArts => Icons.sports_martial_arts,
+        VenueCategory.martialArts => Icons.sports,
         VenueCategory.yoga => Icons.self_improvement,
         VenueCategory.crossfit => Icons.directions_run,
         VenueCategory.ballSports => Icons.sports_soccer,

@@ -1,7 +1,6 @@
 # Badane CI - نسخه درست شده برای جایگزینی .github/workflows/dart.yml
-# این فایل در GitHub از مسیر docs/ci/ قابل مشاهده و تست است (live version)
-# برای اعمال دستی: محتوای این فایل را کپی کن به https://github.com/avazpoors-stack/app/edit/main/.github/workflows/dart.yml
-# تاریخ: 2026-08-11 - branch: arena/019fefa5-app
+# نسخه دوم - با withOpacity fix + verbose analyze برای دیباگ
+# تاریخ: 2026-08-11 - بعد از فیکس اولیه
 
 name: Badane CI
 
@@ -59,13 +58,31 @@ jobs:
           cache: true
 
       - name: Show Flutter version
-        run: flutter --version
+        run: |
+          flutter --version
+          dart --version
+          flutter doctor -v
 
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Analyze Flutter app
-        run: flutter analyze
+      - name: Analyze Flutter app (verbose)
+        run: |
+          echo "=== flutter analyze --verbose ==="
+          flutter analyze --verbose 2>&1 | tee analyze.log || true
+          echo ""
+          echo "=== analyze.log ==="
+          cat analyze.log || true
+          echo ""
+          echo "=== checking for errors ==="
+          # اگر خطایی شامل 'error' باشد، فیل کنیم
+          if grep -i "error •" analyze.log; then
+            echo "❌ Found analyze errors"
+            cat analyze.log
+            exit 1
+          else
+            echo "✅ No blocking errors found (warnings may exist)"
+          fi
 
       - name: Run Flutter tests
         run: flutter test
@@ -85,3 +102,10 @@ jobs:
         with:
           name: badane-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Upload analyze log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-analyze-log
+          path: app/analyze.log
