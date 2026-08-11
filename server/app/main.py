@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Settings
 from .db import init_db
-from . import auth, sync, search, venues
+from . import auth, sync, search, venues, shop
 
 APP_VERSION = "0.4.0"
 
@@ -53,3 +53,4 @@ app.include_router(sync.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")
 app.include_router(venues.router, prefix="/api/v1")
 app.include_router(venues.admin_router, prefix="/api/v1")
+app.include_router(shop.router, prefix="/api/v1")
