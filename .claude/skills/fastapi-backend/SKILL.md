@@ -1,0 +1,2 @@
+# FastAPI Backend
+Respect existing FastAPI structure, schemas, services, persistence and tests. Validate request/response contracts, errors, authentication boundaries, validation, idempotency and backward compatibility. Keep online services optional for offline-first pilot flows.
