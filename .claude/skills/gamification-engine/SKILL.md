@@ -1,0 +1,2 @@
+# Gamification Engine
+Implement and verify scoring, ranks, streaks, personal-record comparison, debounce and reward rules from the Master Plan. Make calculations deterministic and test boundary dates, duplicate taps and incomplete sessions. Do not introduce competitive leaderboard behavior unless explicitly requested.
