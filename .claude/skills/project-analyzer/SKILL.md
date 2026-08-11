@@ -1,0 +1,2 @@
+# Project Analyzer
+Inventory repo structure, Flutter/Dart and FastAPI modules, tests, CI, docs, dependencies, and git state. Use targeted search first. Establish baseline and identify only files relevant to the task. Do not modify code during reconnaissance.
