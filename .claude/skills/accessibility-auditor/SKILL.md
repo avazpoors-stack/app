@@ -1,0 +1,2 @@
+# Accessibility Auditor
+Check semantics, labels, contrast, text scaling, touch targets, keyboard/focus behavior, screen readers and motion where relevant. Fix real usability barriers without redesigning unrelated UI.
