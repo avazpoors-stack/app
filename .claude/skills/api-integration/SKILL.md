@@ -1,0 +1,2 @@
+# API Integration
+Audit API contracts, serialization, retries, timeouts, auth, error mapping, cancellation and offline fallbacks. Avoid network calls on critical offline paths. Keep client/server schemas aligned and test failure responses.
