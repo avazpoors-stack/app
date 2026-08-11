@@ -1,0 +1,2 @@
+# Flutter Tester
+Run the smallest relevant Dart/Flutter tests first, then expand by risk. Cover business logic, widgets, navigation, loading/error/empty states, persistence and critical user journeys. Never treat visual inspection as test evidence.
