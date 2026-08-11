@@ -1,42 +1,87 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# Badane CI - نسخه درست شده برای جایگزینی .github/workflows/dart.yml
+# این فایل در GitHub از مسیر docs/ci/ قابل مشاهده و تست است (live version)
+# برای اعمال دستی: محتوای این فایل را کپی کن به https://github.com/avazpoors-stack/app/edit/main/.github/workflows/dart.yml
+# تاریخ: 2026-08-11 - branch: arena/019fefa5-app
 
-name: Dart
+name: Badane CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - "arena/**"
   pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  backend:
+    name: Backend (pytest)
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: server
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Note: This workflow uses the latest stable version of the Dart SDK.
-      # You can specify other versions if desired, see documentation here:
-      # https://github.com/dart-lang/setup-dart/blob/main/README.md
-      # - uses: dart-lang/setup-dart@v1
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: server/requirements.txt
 
-      - name: Install dependencies
-        run: dart pub get
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
+      - name: Run backend tests
+        run: pytest -q
 
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: dart analyze
+  flutter:
+    name: Flutter (analyze + test + debug APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      - name: Run tests
-        run: dart test
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Analyze Flutter app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Report APK size
+        run: |
+          APK="build/app/outputs/flutter-apk/app-debug.apk"
+          SIZE=$(stat -c%s "$APK")
+          echo "APK size: $SIZE bytes ($((SIZE / 1024 / 1024)) MB)"
+          test "$SIZE" -lt 104857600
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: badane-debug-apk
+          path: app/build/app/outputs/flutter-apk/app-debug.apk
