@@ -15,7 +15,7 @@ void main() {
       account: AccountRepository(InMemoryStore()),
     );
     expect(shop.categoryList(), hasLength(8));
-    expect(shop.categories.containsKey('gym'), true);
+    expect(ShopService.categories.containsKey('gym'), true);
   });
 
   test('لیست محصولات بدون اینترنت با Mock کار می‌کند', () async {

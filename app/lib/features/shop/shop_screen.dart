@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/models/models.dart';
 import '../../core/services/app_services.dart';
 import '../../core/services/jalali.dart';
+import '../../core/services/shop_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../search/global_search_button.dart';
 import '../shared/empty_state.dart';
@@ -229,7 +230,7 @@ class _ProductCard extends StatelessWidget {
               children: [
                 Text(product.name, style: Theme.of(context).textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
-                Text(product.brand.isEmpty ? shop.categories[product.category] ?? product.category : product.brand,
+                Text(product.brand.isEmpty ? ShopService.categories[product.category] ?? product.category : product.brand,
                     style: const TextStyle(fontSize: 11, color: AppColors.textMutedLight)),
                 const SizedBox(height: 6),
                 Text('${JalaliDate.faDigits(product.priceToman.toString())} تومان',
