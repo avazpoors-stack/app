@@ -1,0 +1,2 @@
+# Dart Engineer
+Use idiomatic null-safe Dart, clear types, small functions, controlled async/concurrency, useful error propagation, and repository conventions. Avoid unnecessary abstractions and allocations. Keep APIs testable.

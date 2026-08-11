@@ -1,0 +1,2 @@
+# Project Memory
+Read `MEMORY.md` first. Extract only facts relevant to the current task. Follow its evidence labels and update memory only when the workflow explicitly requires it. Never invent state.

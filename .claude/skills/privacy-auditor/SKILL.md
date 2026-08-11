@@ -1,0 +1,2 @@
+# Privacy Auditor
+Minimize collection, isolate identity data, inspect logs/exports/analytics/storage, and verify anonymous pilot export contains no name, phone, email or other identity fields. Flag unnecessary data retention and insecure sharing.

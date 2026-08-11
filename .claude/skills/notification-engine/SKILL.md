@@ -1,0 +1,2 @@
+# Notification Engine
+Implement local reminders safely. Verify scheduling, timezone/device behavior, permission state, airplane/offline behavior, duplicate prevention and user settings. Do not require a backend for local reminders.
